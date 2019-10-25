@@ -1,0 +1,14 @@
+^bootstrapnet\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+^_not_include$
+^\.ps$
+^\.gitattributes$
+^\.gitignore$
+^\.git$
+^README-.*\.png$
+^\.travis\.yml$
+^\.RData$
+^html$
+^\.RData
+^appveyor\.yml$
