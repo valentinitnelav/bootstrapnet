@@ -166,9 +166,9 @@ ggsave(filename = "man/figures/README-example-betweenness-HLW.png",
 ![](man/figures/README-example-betweenness-HLW.png)
 
 
-Plot resampled betweenness of all species at both levels or of selected common species.
+Plot resampled betweenness of all species at both levels of selected common species.
 
-Selected common species
+Selected common species:
 
 ``` r
 common_lower_sp <- intersect(rownames(Safariland_1), rownames(Safariland_2))
