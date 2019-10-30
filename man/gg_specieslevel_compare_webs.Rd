@@ -19,22 +19,22 @@ species will be plotted.}
 \item{sp_higher}{Similar to \code{sp_lower}, but valid for higher level species names (insects).}
 
 \item{size_boot_lines}{Size of the line connecting the bootstrapped values of the metric. Default
-is 0.1. Passed to \code{\link[ggplot2]{geom_line}}.}
+is 0.1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.}
 
 \item{alpha_boot_lines}{Alpha parameter of the line connecting the bootstrapped values of the
-metric. Default is 0.1. Passed to \code{\link[ggplot2]{geom_line}}.}
+metric. Default is 0.1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.}
 
 \item{size_ci}{Size of the line used for the confidence intervals. Default is 1. Passed to
-\code{\link[ggplot2]{geom_line}}.}
+\code{\link[ggplot2:geom_path]{geom_line}}.}
 
 \item{linetype_ci}{Type of the line used for the confidence intervals. Default is 2. Passed to
-\code{\link[ggplot2]{geom_line}}.}
+\code{\link[ggplot2:geom_path]{geom_line}}.}
 
 \item{size_mean}{Size of the line connecting the bootstrapped mean values of the metric.
-Default is 1. Passed to \code{\link[ggplot2]{geom_line}}.}
+Default is 1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.}
 
 \item{linetype_mean}{Type of the line connecting the bootstrapped mean values of the metric.
-Default is 1. Passed to \code{\link[ggplot2]{geom_line}}.}
+Default is 1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.}
 }
 \value{
 A list of one or more ggplots.

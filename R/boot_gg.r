@@ -146,27 +146,27 @@ boot_networklevel <- function(lst,
 #'
 #' @param size_boot_lines
 #'  Size of the line connecting the bootstrapped values of the metric. Default
-#'  is 0.1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  is 0.1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param alpha_boot_lines
 #'  Alpha parameter of the line connecting the bootstrapped values of the
-#'  metric. Default is 0.1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  metric. Default is 0.1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param size_ci
 #'  Size of the line used for the confidence intervals. Default is 1. Passed to
-#'  \code{\link[ggplot2]{geom_line}}.
+#'  \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param linetype_ci
 #'  Type of the line used for the confidence intervals. Default is 2. Passed to
-#'  \code{\link[ggplot2]{geom_line}}.
+#'  \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param size_mean
 #'  Size of the line connecting the bootstrapped mean values of the metric.
-#'  Default is 1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  Default is 1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param linetype_mean
 #'  Type of the line connecting the bootstrapped mean values of the metric.
-#'  Default is 1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  Default is 1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @return
 #'  A list of one or more ggplots.
@@ -403,27 +403,27 @@ boot_specieslevel <- function(lst,
 #'
 #' @param size_boot_lines
 #'  Size of the line connecting the bootstrapped values of the metric. Default
-#'  is 0.1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  is 0.1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param alpha_boot_lines
 #'  Alpha parameter of the line connecting the bootstrapped values of the
-#'  metric. Default is 0.1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  metric. Default is 0.1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param size_ci
 #'  Size of the line used for the confidence intervals. Default is 1. Passed to
-#'  \code{\link[ggplot2]{geom_line}}.
+#'  \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param linetype_ci
 #'  Type of the line used for the confidence intervals. Default is 2. Passed to
-#'  \code{\link[ggplot2]{geom_line}}.
+#'  \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param size_mean
 #'  Size of the line connecting the bootstrapped mean values of the metric.
-#'  Default is 1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  Default is 1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param linetype_mean
 #'  Type of the line connecting the bootstrapped mean values of the metric.
-#'  Default is 1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  Default is 1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @return
 #'  A list of one or more ggplots.
@@ -521,27 +521,27 @@ gg_specieslevel_web_by_web <- function(metrics_stats,
 #'
 #' @param size_boot_lines
 #'  Size of the line connecting the bootstrapped values of the metric. Default
-#'  is 0.1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  is 0.1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param alpha_boot_lines
 #'  Alpha parameter of the line connecting the bootstrapped values of the
-#'  metric. Default is 0.1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  metric. Default is 0.1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param size_ci
 #'  Size of the line used for the confidence intervals. Default is 1. Passed to
-#'  \code{\link[ggplot2]{geom_line}}.
+#'  \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param linetype_ci
 #'  Type of the line used for the confidence intervals. Default is 2. Passed to
-#'  \code{\link[ggplot2]{geom_line}}.
+#'  \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param size_mean
 #'  Size of the line connecting the bootstrapped mean values of the metric.
-#'  Default is 1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  Default is 1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @param linetype_mean
 #'  Type of the line connecting the bootstrapped mean values of the metric.
-#'  Default is 1. Passed to \code{\link[ggplot2]{geom_line}}.
+#'  Default is 1. Passed to \code{\link[ggplot2:geom_path]{geom_line}}.
 #'
 #' @return
 #'  A list of one or more ggplots.
