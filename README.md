@@ -47,7 +47,7 @@ Safariland_2 <- Safariland[, sort(sample.int(ncol(Safariland), 20))]
 
 
 # Resample the two networks with computing "nestedness". The computation is
-carried in parallel.
+# carried in parallel.
 
 lst_nest <- list(s1 = Safariland_1, s2 = Safariland_2) %>%
   lapply(web_matrix_to_df) %>%
@@ -218,7 +218,7 @@ ggsave(filename = "man/figures/README-example-betweenness-common-sp-S2HLW.png",
 ![](man/figures/README-example-betweenness-common-sp-S2HL.png)
 ![](man/figures/README-example-betweenness-common-sp-S2HLW.png)
 
-To plot betweenness of all species at all levels for each web/network, just leave the parameters `sp_lower` and `sp_higher` to default to NULL.
+To plot betweenness of all species at all levels for each web/network, just leave the parameters `sp_lower` and `sp_higher` to default to `NULL`.
 
 ``` r
 btw_sp_webs_gg_all <- lst_btw %>%
