@@ -1,4 +1,146 @@
 #' @title
+#'  Prepare for plotting the bootstrapped metrics at the species level of one or
+#'  multiple networks.
+#'
+#' @description
+#'  Takes a list of network interactions (each interaction being repeated as
+#'  many times as it was observed), and bootstraps the given species level
+#'  metric (`index`) for each network. Runs `boot_specieslevel_n()` for a list
+#'  of network interactions and prepares the data for plotting with `ggplot`.
+#'  The output list can be passed to
+#'  \code{\link[bootstrapnet]{gg_specieslevel_compare_webs}} or to
+#'  \code{\link[bootstrapnet]{get_stats_multi}} and then its output to
+#'  \code{\link[bootstrapnet]{gg_specieslevel_web_by_web}}. See examples below.
+#'
+#' @param lst
+#'  A list of one or multiple data frames of interactions from which to build
+#'  and sample web matrices. Each interaction (row in the data frame) must be
+#'  repeated as many times as it was observed. E.g. if the interaction species_1
+#'  x species_2 was observed 5 times, then repeat that row 5 times within the
+#'  data frame.
+#'
+#' @param col_lower
+#'  Quoted column name in `data` for lower trophic level species (plants).
+#'
+#' @param col_higher
+#'  Quoted column name in `data` for higher trophic level species (insects).
+#'
+#' @param index
+#'  Passed to \code{\link[bipartite]{networklevel}}. See
+#'  `?bipartite::networklevel` for details.
+#'
+#' @param level
+#'  Passed to \code{\link[bipartite]{networklevel}}. See
+#'  `?bipartite::networklevel` for details. For which level should the
+#'  level-specific indices be computed: 'both' (default), 'lower' or 'higher'?
+#'
+#' @param start
+#'  Integer. The sample size (number of interactions) to start the bootstrap
+#'  with. If the start sample size is small (e.g. 5 or 10), then first
+#'  iterations might results in NaN-s and warning messages are displayed.
+#'
+#' @param step
+#'  Integer. Sample size (number of interactions) used to increase gradually the
+#'  sampled network until all interactions are sampled. If `step` is too small
+#'  (e.g. 1) then the computation time is very long depending on your total
+#'  number of interactions from which samples are taken.
+#'
+#' @param n_boot
+#'  Number of desired bootstraps (50 or 100 can be enough).
+#'
+#' @param n_cpu
+#'  Number of CPU-s to use for parallel processing.
+#'
+#' @param probs
+#'  A numeric vector of two probabilities in `[0, 1]`. Passed to
+#'  \code{\link[matrixStats]{rowQuantiles}} and used for building the lower and
+#'  upper bounds of the confidence intervals. Defaults to `c(0.025, 0.975)`,
+#'  which corresponds to a 95\% confidence interval.
+#'
+#' @param ...
+#'  Other arguments passed to \code{\link[bipartite]{specieslevel}}.
+#'
+#' @return
+#'  A 3 levels list of the same length as `lst`. The list can be passed to
+#'  \code{\link[bootstrapnet]{gg_specieslevel_compare_webs}} or to
+#'  \code{\link[bootstrapnet]{get_stats_multi}} and then its output to
+#'  \code{\link[bootstrapnet]{gg_specieslevel_web_by_web}}. Each element of the
+#'  list is a sub-list corresponding to each network. Each sub-list contains
+#'  further sub-lists with the bootstrapped metric values at 'lower', 'higher'
+#'  or 'both' levels. Each sub-sub-lists contains two data frames: `stats_df`
+#'  and `lines_df`, which can be used by the `ggplot2::geom_line()` function.
+#'  See the return section of \code{\link[bootstrapnet]{get_stats_single}} for
+#'  more details about `stats_df` and `lines_df` data frames.
+#'
+#' @examples
+#'
+#' library(bootstrapnet)
+#' library(bipartite)
+#' library(magrittr)
+#' data(Safariland)
+#'
+#' set.seed(321)
+#' Safariland_1 <- Safariland[, sort(sample.int(ncol(Safariland), 20))]
+#' set.seed(123)
+#' Safariland_2 <- Safariland[, sort(sample.int(ncol(Safariland), 20))]
+#'
+#' lst <- list(s1 = Safariland_1, s2 = Safariland_2) %>%
+#'   lapply(web_matrix_to_df) %>%
+#'   boot_specieslevel(col_lower = "lower", # column name for plants
+#'                     col_higher = "higher", # column name for insects
+#'                     index = "betweenness",
+#'                     level = "both",
+#'                     start = 50,
+#'                     step = 20,
+#'                     n_boot = 10,
+#'                     n_cpu = 2)
+#'
+#' lst %>%
+#'   get_stats_multi() %>%
+#'   gg_specieslevel_compare_webs(sp_lower = "Alstroemeria aurea",
+#'                                sp_higher = "Allograpta.Toxomerus")
+#'
+#' lst %>%
+#'   gg_specieslevel_web_by_web(sp_lower = c("Alstroemeria aurea",
+#'                                           "Aristotelia chilensis"))
+#'
+#' @export
+#'
+#' @md
+boot_specieslevel <- function(lst,
+                              col_lower,
+                              col_higher,
+                              index,
+                              level,
+                              start,
+                              step,
+                              n_boot,
+                              n_cpu,
+                              probs = c(0.025, 0.975),
+                              ...){
+
+  webs_stats <- vector(mode = "list", length = length(lst))
+  names(webs_stats) <- names(lst)
+
+  for (i in 1:length(webs_stats)){
+    webs_stats[[i]] <- lst[[i]] %>%
+      boot_specieslevel_n(col_lower = col_lower,
+                          col_higher = col_higher,
+                          index = index,
+                          level = level,
+                          start = start,
+                          step = step,
+                          n_boot = n_boot,
+                          n_cpu = n_cpu,
+                          ...) %>%
+      lapply(FUN = get_stats_single, probs = probs)
+  }
+
+  return(webs_stats)
+}
+
+
+#' @title
 #'  Bootstrap metric at the species level multiple times.
 #'
 #' @description

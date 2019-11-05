@@ -47,6 +47,190 @@ web_matrix_to_df <- function(web, seed = 42){
 }
 
 
+#' @title
+#' Prepare bootstrapped results of a single network for `ggplot` friendly data
+#' format.
+#'
+#' @description
+#'  Helper to prepare the bootstrapped metric output of a single web/network
+#'  from \code{\link[bootstrapnet]{boot_networklevel_n}} or
+#'  \code{\link[bootstrapnet]{boot_specieslevel_n}} in a format ready for
+#'  \code{\link[ggplot2]{ggplot}}.
+#'
+#' @param x
+#'  A bootstrap matrix or an array of matrices from
+#'  \code{\link[bootstrapnet]{boot_networklevel_n}} or
+#'  \code{\link[bootstrapnet]{boot_specieslevel_n}}.
+#'
+#' @param probs
+#'  A numeric vector of two probabilities in `[0, 1]`. Passed to
+#'  \code{\link[matrixStats]{rowQuantiles}} and used for building the lower and
+#'  upper bounds of the confidence intervals. Defaults to `c(0.025, 0.975)`,
+#'  which corresponds to a 95\% confidence interval.
+#'
+#' @return
+#'  A list of two data frames to be used with \code{\link[ggplot2]{ggplot}}.
+#'  First one, `stats_df` is a 4 columns data frame, containing the sample size
+#'  (`spl_size`) at each iteration and the corresponding mean metric (`mean`)
+#'  together with its bootstrap confidence interval limits (`ci_low`, `ci_up`).
+#'  The second one, `lines_df`, contains all the bootstrapped values (`value`) of
+#'  a given network metric at each iteration (`simulation_id`) and its
+#'  corresponding sample size (`spl_size`). Can be used for enhancing visual
+#'  effect when plotting the mean bootstrap values.
+#'
+#' @examples
+#' library(bootstrapnet)
+#' library(bipartite)
+#' library(magrittr)
+#' data(Safariland)
+#'
+#' stats_d_lower <- Safariland %>%
+#'   web_matrix_to_df() %>%
+#'   boot_specieslevel_n(col_lower = "lower", # column name for plants
+#'                         col_higher = "higher", # column name for insects
+#'                         index = "d",
+#'                         level = "both",
+#'                         start = 100,
+#'                         step = 100,
+#'                         n_boot = 10,
+#'                         n_cpu = 2) %>%
+#'   .[["lower_level"]] %>%
+#'   get_stats_single()
+#'
+#' @importFrom magrittr %>%
+#' @importFrom data.table melt rbindlist
+#' @importFrom dplyr mutate inner_join
+#' @importFrom tibble rownames_to_column
+#' @importFrom purrr reduce
+#' @importFrom matrixStats rowMeans2 rowQuantiles
+#'
+#' @export
+#'
+#' @md
+get_stats_single <- function(x, probs = c(0.025, 0.975)){
+  cls <- class(x)
+  if (! cls %in% c("matrix", "array")) stop("Expecting a matrix or a 3 dimensions array")
+
+  if (cls == "matrix") {
+    stats_df <- data.frame(spl_size = as.integer(rownames(x))) %>%
+      dplyr::mutate(mean   = matrixStats::rowMeans2(x, na.rm = TRUE),
+                    ci_low = matrixStats::rowQuantiles(x, probs = probs[1], na.rm = TRUE) %>% unname,
+                    ci_up  = matrixStats::rowQuantiles(x, probs = probs[2], na.rm = TRUE) %>% unname)
+
+    lines_df <- x %>%
+      as.data.frame %>%
+      tibble::rownames_to_column(var = "spl_size") %>%
+      data.table::melt(id.vars = "spl_size",
+                       variable.name = "simulation_id") %>%
+      dplyr::mutate(spl_size = as.integer(spl_size),
+                    simulation_id = as.integer(simulation_id))
+
+    return(list(stats_df = stats_df,
+                lines_df = lines_df))
+
+  } else if (cls == "array") {
+    means <- x %>%
+      apply(MARGIN = 1:2, FUN = mean, na.rm = TRUE) %>%
+      as.data.frame %>%
+      tibble::rownames_to_column(var = "sp") %>%
+      data.table::melt(id.vars = "sp", variable.name = "spl_size", value.name = "mean")
+
+    quantiles_low <- x %>%
+      apply(MARGIN = 1:2, FUN = quantile, na.rm = TRUE, probs = probs[1]) %>%
+      as.data.frame %>%
+      tibble::rownames_to_column(var = "sp") %>%
+      data.table::melt(id.vars = "sp", variable.name = "spl_size", value.name = "ci_low")
+
+    quantiles_up <- x %>%
+      apply(MARGIN = 1:2, FUN = quantile, na.rm = TRUE, probs = probs[2]) %>%
+      as.data.frame %>%
+      tibble::rownames_to_column(var = "sp") %>%
+      data.table::melt(id.vars = "sp", variable.name = "spl_size", value.name = "ci_up")
+
+    stats_df <- list(means, quantiles_low, quantiles_up) %>%
+      purrr::reduce(dplyr::inner_join, by = c("sp", "spl_size")) %>%
+      dplyr::mutate(spl_size = as.integer(as.character(spl_size)))
+
+
+    lines_df <- x %>%
+      apply(MARGIN = 3, FUN = as.data.frame) %>%
+      lapply(rownames_to_column, var = "sp") %>%
+      data.table::rbindlist(idcol = "simulation_id") %>%
+      data.table::melt(id.vars = c("sp", "simulation_id"), variable.name = "spl_size") %>%
+      dplyr::mutate(spl_size = as.integer(as.character(spl_size)))
+
+    return(list(stats_df = stats_df,
+                lines_df = lines_df))
+  }
+}
+
+
+#' @title
+#'  Prepare bootstrapped results of one or more networks for `ggplot2` friendly
+#'  data format.
+#'
+#' @description
+#'  Helper to prepare the bootstrapped metric output of one or more
+#'  webs/networks from \code{\link[bootstrapnet]{boot_specieslevel}},
+#'  \code{\link[bootstrapnet]{boot_networklevel_n}} or
+#'  \code{\link[bootstrapnet]{boot_specieslevel_n}} in a format ready for
+#'  \code{\link[ggplot2]{ggplot}}. See the examples section of
+#'  \code{\link[bootstrapnet]{boot_specieslevel}}.
+#'
+#' @param webs_stats
+#'  A list of bootstrap results from
+#'  \code{\link[bootstrapnet]{boot_specieslevel}}, or from multiple runs of
+#'  \code{\link[bootstrapnet]{boot_networklevel_n}} or
+#'  \code{\link[bootstrapnet]{boot_specieslevel_n}}.
+#'
+#' @return
+#'  A list of two data frames to be used with \code{\link[ggplot2]{ggplot}}.
+#'  First one, `stats_df` is a 5 columns data frame, containing for each network
+#'  (`web`) the sample size (`spl_size`) at each iteration and the corresponding
+#'  mean metric (`mean`), together with its bootstrap confidence interval limits
+#'  (`ci_low`, `ci_up`). The second one, `lines_df`, contains all the
+#'  bootstrapped values (`value`) of a given network metric at each iteration
+#'  (`simulation_id`) and its corresponding sample size (`spl_size`). Can be
+#'  used for enhancing visual effect when plotting the mean bootstrap values.
+#'
+#' @examples
+#'  # See example section of ?boot_specieslevel
+#'
+#' @export
+#'
+#' @md
+get_stats_multi <- function(webs_stats){
+
+  metric_names <- names(webs_stats[[1]])
+  n <- length(metric_names)
+
+  metrics_stats <- vector(mode = "list", length = n)
+  names(metrics_stats) <- metric_names
+
+  for (i in 1:n){
+    temp <- webs_stats %>%
+      lapply("[[", metric_names[i])
+
+    temp_stats_df <- temp %>%
+      lapply("[[", "stats_df") %>%
+      data.table::rbindlist(idcol = "web") %>%
+      data.table::setDF()
+
+    temp_lines_df <- temp %>%
+      lapply("[[", "lines_df") %>%
+      data.table::rbindlist(idcol = "web") %>%
+      data.table::setDF()
+
+    metrics_stats[[i]] <- list(stats_df = temp_stats_df,
+                               lines_df = temp_lines_df)
+
+    rm(temp, temp_stats_df, temp_lines_df)
+  }
+
+  return(metrics_stats)
+}
+
+
 # Hidden helper functions -------------------------------------------------
 
 
@@ -252,8 +436,8 @@ boot_specieslevel_both_levels <- function(data, col_lower, col_higher, metric_ls
       boot_mat_higher_level[high_indices_logical, j] <- metric_lst[[j]]$`higher level`[, 1]
     }
 
-    return(list(lower_level = boot_mat_lower_level,
-                higher_level = boot_mat_higher_level))
+    return(list(higher_level = boot_mat_higher_level,
+                lower_level = boot_mat_lower_level))
 
     # In case of weighted indices:
   } else if (dim(metric_lst[[n]][[1]])[2] == 2) {
@@ -273,10 +457,10 @@ boot_specieslevel_both_levels <- function(data, col_lower, col_higher, metric_ls
       boot_mat_higher_level_weighted[high_indices_logical, j] <- metric_lst[[j]]$`higher level`[, 2]
     }
 
-    return(list(lower_level = boot_mat_lower_level,
-                lower_level_weighted = boot_mat_lower_level_weighted,
-                higher_level = boot_mat_higher_level,
-                higher_level_weighted = boot_mat_higher_level_weighted))
+    return(list(higher_level = boot_mat_higher_level,
+                higher_level_weighted = boot_mat_higher_level_weighted,
+                lower_level = boot_mat_lower_level,
+                lower_level_weighted = boot_mat_lower_level_weighted))
   }
 }
 
