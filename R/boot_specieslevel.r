@@ -258,6 +258,7 @@ boot_specieslevel_n <- function(data,
   doParallel::registerDoParallel(cl)
   i <- NULL # to avoid 'Undefined global functions or variables: i' in R CMD check
   boot_lst <- foreach::foreach(i = iterators::iter(chunks),
+                               .errorhandling = 'pass',
                                .packages = c("data.table",
                                              "bipartite",
                                              "magrittr"),

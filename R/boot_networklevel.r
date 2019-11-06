@@ -259,6 +259,7 @@ boot_networklevel_n <- function(data,
 
     boot_lst <-
       foreach::foreach(i = iterators::iter(chunks),
+                       .errorhandling = 'pass',
                        .packages = c("magrittr",
                                      "data.table",
                                      "bipartite"),
