@@ -13,21 +13,22 @@ BugReports: https://github.com/valentinitnelav/bootstrapnet/issues
 Depends:
     R (>= 3.5)
 Imports:
-    matrixStats (>= 0.54),
+    matrixStats (>= 0.53.1),
     magrittr (>= 1.5),
-    data.table (>= 1.12),
-    dplyr (>= 0.8.3),
-    tibble (>= 2.1.3),
-    tidyr (>= 0.8.3),
-    purrr (>= 0.3.2),
-    ggplot2 (>= 3.2),
-    bipartite (>= 2.13),
-    parallel (>= 3.6),
-    doParallel (>= 1.0.15),
-    foreach (>= 1.4.7),
-    iterators (>= 1.0.12)
+    data.table (>= 1.11.4),
+    dplyr (>= 0.7.6),
+    tibble (>= 1.4.2),
+    tidyr (>= 0.8.1),
+    purrr (>= 0.2.5),
+    ggplot2 (>= 3.0.0),
+    bipartite (>= 2.11),
+    parallel (>= 3.5),
+    doParallel (>= 1.0.11),
+    foreach (>= 1.4.4),
+    iterators (>= 1.0.10)
 Suggests: 
-    devtools
+    devtools,
+    testthat
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
