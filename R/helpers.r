@@ -296,8 +296,11 @@ sample_indices <- function(data, start, step, seed){
       sample(ids_shuffle, start)
     },
     error = function(cond){
-      message(cond)
-      message("\nYour `start` value is bigger than the number of interactions in data.")
+      message(cond, "\n")
+      stop("\nPossibly because your `start` value, ", start,
+              ", is bigger than the number of interactions in data, ",
+              unique(data) %>% dplyr::select(counts) %>% sum(),
+              ".\nIf this is the case, then consider to reduce `start` to maybe 10 % of your interactions.")
     }
   )
   # Remove the already sampled ids used for the start sample
@@ -306,7 +309,18 @@ sample_indices <- function(data, start, step, seed){
   # Build the list of growing sampled indices. The first element (first vector
   # of indices) was already sampled above (the start sample). Then add gradually
   # a new chunk of indices until all indices are used.
-  ids_remaining_chunks <- split_in_chunks(ids_remaining, length(ids_remaining)/step)
+  ids_remaining_chunks <- tryCatch(
+    {
+      split_in_chunks(ids_remaining, length(ids_remaining)/step)
+    },
+    error = function(cond){
+      message(cond, "\n")
+      stop("\nPossibly because your `step` value, ", step,
+           ", is bigger than the number of interactions in data, ",
+           unique(data) %>% dplyr::select(counts) %>% sum(),
+           ".\nIf this is the case, then consider to reduce `step` to maybe 5-10 % of your interactions.")
+    }
+  )
   ids_lst <- vector(mode = "list", length = (length(ids_remaining_chunks) + 1))
   ids_lst[[1]] <- start_sample
   for (i in 2:length(ids_lst)){

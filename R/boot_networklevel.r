@@ -38,12 +38,14 @@
 #'  Integer. The sample size (number of interactions) to start the bootstrap
 #'  with. If the start sample size is small (e.g. 5 or 10), then first
 #'  iterations might results in NaN-s and warning messages are displayed.
+#'  Consider to set `start` to maybe 10\% of your total unique interactions.
 #'
 #' @param step
 #'  Integer. Sample size (number of interactions) used to increase gradually the
 #'  sampled network until all interactions are sampled. If `step` is too small
 #'  (e.g. 1) then the computation time is very long depending on your total
-#'  number of interactions from which samples are taken.
+#'  number of interactions from which samples are taken. Consider to set `step`
+#'  to maybe 5-10\% of your total unique interactions.
 #'
 #' @param n_boot
 #'  Number of desired bootstraps (50 or 100 can be enough).
@@ -171,12 +173,14 @@ boot_networklevel <- function(lst,
 #'  Integer. The sample size (number of interactions) to start the bootstrap
 #'  with. If the start sample size is small (e.g. 5 or 10), then first
 #'  iterations might results in NaN-s and warning messages are displayed.
+#'  Consider to set `start` to maybe 10\% of your total unique interactions.
 #'
 #' @param step
 #'  Integer. Sample size (number of interactions) used to increase gradually the
 #'  sampled network until all interactions are sampled. If `step` is too small
 #'  (e.g. 1) then the computation time is very long depending on your total
-#'  number of interactions from which samples are taken.
+#'  number of interactions from which samples are taken. Consider to set `step`
+#'  to maybe 5-10\% of your total unique interactions.
 #'
 #' @param n_boot
 #'  Number of desired bootstraps (50 or 100 can be enough).
@@ -249,12 +253,18 @@ boot_networklevel_n <- function(data,
   if (any(c("", "NA", "na") %in% unique(data[[col_higher]])))
     stop("You have undefined/empty species names. Check the higher level species names for NA-s or empty strings.")
 
+  # Get sample sizes. Row names of the resulting bootstrap matrices will carry
+  # information about the sample size at each iteration/bootstrap step. This is
+  # run also before the parallel processing initiation because it can throw
+  # error messages if the start and step values are not adequate. No need to
+  # initiate parallel processing for something that will fail.
+  iter_spl_size <- sample_indices(data = data, start = start, step = step, seed = 42) %>%
+    sapply(length)
 
   { # Start parallel processing
     chunks <- parallel::splitIndices(n_boot, n_cpu)
     cl <- parallel::makeCluster(n_cpu)
     doParallel::registerDoParallel(cl)
-
     i <- NULL # to avoid 'Undefined global functions or variables: i' in R CMD check
 
     boot_lst <-
@@ -281,13 +291,7 @@ boot_networklevel_n <- function(data,
     parallel::stopCluster(cl)
     remove(cl)
     foreach::registerDoSEQ()
-
     } # End of parallel processing
-
-  # Row names of the resulting bootstrap matrices will carry information about
-  # the sample size at each iteration/bootstrap step.
-  iter_spl_size <- sample_indices(data = data, start = start, step = step, seed = 42) %>%
-    sapply(length)
 
   boot_lst <- unlist(boot_lst, recursive = FALSE)
 

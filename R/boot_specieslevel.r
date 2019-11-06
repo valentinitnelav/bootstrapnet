@@ -38,12 +38,14 @@
 #'  Integer. The sample size (number of interactions) to start the bootstrap
 #'  with. If the start sample size is small (e.g. 5 or 10), then first
 #'  iterations might results in NaN-s and warning messages are displayed.
+#'  Consider to set `start` to maybe 10\% of your total unique interactions.
 #'
 #' @param step
 #'  Integer. Sample size (number of interactions) used to increase gradually the
 #'  sampled network until all interactions are sampled. If `step` is too small
 #'  (e.g. 1) then the computation time is very long depending on your total
-#'  number of interactions from which samples are taken.
+#'  number of interactions from which samples are taken. Consider to set `step`
+#'  to maybe 5-10\% of your total unique interactions.
 #'
 #' @param n_boot
 #'  Number of desired bootstraps (50 or 100 can be enough).
@@ -178,12 +180,14 @@ boot_specieslevel <- function(lst,
 #'  Integer. The sample size (number of interactions) to start the bootstrap
 #'  with. If the start sample size is small (e.g. 5 or 10), then first
 #'  iterations might results in NaN-s and warning messages are displayed.
+#'  Consider to set `start` to maybe 10\% of your total unique interactions.
 #'
 #' @param step
 #'  Integer. Sample size (number of interactions) used to increase gradually the
 #'  sampled network until all interactions are sampled. If `step` is too small
 #'  (e.g. 1) then the computation time is very long depending on your total
-#'  number of interactions from which samples are taken.
+#'  number of interactions from which samples are taken. Consider to set `step`
+#'  to maybe 5-10\% of your total unique interactions.
 #'
 #' @param n_boot
 #'  Number of desired bootstraps (50 or 100 can be enough).
@@ -252,46 +256,51 @@ boot_specieslevel_n <- function(data,
   if (any(c("", "NA", "na") %in% unique(data[[col_higher]])))
     stop("You have undefined/empty species names. Check the higher level species names for NA-s or empty strings.")
 
-  chunks <- parallel::splitIndices(n_boot, n_cpu)
+  # Get sample sizes. Column names of the resulting bootstrap matrices will
+  # carry information about the sample size at each iteration/bootstrap step.
+  # This is run also before the parallel processing initiation because it can
+  # throw error messages if the start and step values are not adequate. No need
+  # to initiate parallel processing for something that will fail.
+  iter_spl_size <- sample_indices(data = data, start = start, step = step, seed = 42) %>%
+    sapply(length)
 
-  cl <- parallel::makeCluster(n_cpu)
-  doParallel::registerDoParallel(cl)
-  i <- NULL # to avoid 'Undefined global functions or variables: i' in R CMD check
-  boot_lst <- foreach::foreach(i = iterators::iter(chunks),
-                               .errorhandling = 'pass',
-                               .packages = c("data.table",
-                                             "bipartite",
-                                             "magrittr"),
-                               .export = c("boot_specieslevel_once",
-                                           "split_in_chunks",
-                                           "sample_indices",
-                                           "boot_specieslevel_lower_or_higher",
-                                           "boot_specieslevel_both_levels")) %dopar%
-                                           {
-                                             lapply(i, FUN = function(x)
-                                               boot_specieslevel_once(data = data,
-                                                                      col_lower = col_lower,
-                                                                      col_higher = col_higher,
-                                                                      index = index,
-                                                                      level = level,
-                                                                      start = start,
-                                                                      step = step,
-                                                                      seed = x,
-                                                                      ...) )
-                                           }
-  parallel::stopCluster(cl)
-  remove(cl)
-  foreach::registerDoSEQ()
+  { # Start parallel processing
+    chunks <- parallel::splitIndices(n_boot, n_cpu)
+    cl <- parallel::makeCluster(n_cpu)
+    doParallel::registerDoParallel(cl)
+    i <- NULL # to avoid 'Undefined global functions or variables: i' in R CMD check
+
+    boot_lst <- foreach::foreach(i = iterators::iter(chunks),
+                                 .errorhandling = 'pass',
+                                 .packages = c("data.table",
+                                               "bipartite",
+                                               "magrittr"),
+                                 .export = c("boot_specieslevel_once",
+                                             "split_in_chunks",
+                                             "sample_indices",
+                                             "boot_specieslevel_lower_or_higher",
+                                             "boot_specieslevel_both_levels")) %dopar%
+                                             {
+                                               lapply(i, FUN = function(x)
+                                                 boot_specieslevel_once(data = data,
+                                                                        col_lower = col_lower,
+                                                                        col_higher = col_higher,
+                                                                        index = index,
+                                                                        level = level,
+                                                                        start = start,
+                                                                        step = step,
+                                                                        seed = x,
+                                                                        ...) )
+                                             }
+    parallel::stopCluster(cl)
+    remove(cl)
+    foreach::registerDoSEQ()
+    } # End of parallel processing
 
   boot_lst <- unlist(boot_lst, recursive = FALSE)
 
   metric_names <- names(boot_lst[[1]])
   n <- length(metric_names)
-
-  # Row names of the resulting bootstrap matrices will carry information about
-  # the sample size at each iteration/bootstrap step.
-  iter_spl_size <- sample_indices(data = data, start = start, step = step, seed = 42) %>%
-    sapply(length)
 
   if (n == 1) {
     results <- get_list_of_arrays(boot_lst, metric_names, n, iter_spl_size)
