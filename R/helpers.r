@@ -120,6 +120,7 @@ get_stats_single <- function(x, probs = c(0.025, 0.975)){
     lines_df <- x %>%
       as.data.frame %>%
       tibble::rownames_to_column(var = "spl_size") %>%
+      setDT() %>%
       data.table::melt(id.vars = "spl_size",
                        variable.name = "simulation_id") %>%
       dplyr::mutate(spl_size = as.integer(spl_size),
@@ -133,18 +134,21 @@ get_stats_single <- function(x, probs = c(0.025, 0.975)){
       apply(MARGIN = 1:2, FUN = mean, na.rm = TRUE) %>%
       as.data.frame %>%
       tibble::rownames_to_column(var = "sp") %>%
+      setDT() %>%
       data.table::melt(id.vars = "sp", variable.name = "spl_size", value.name = "mean")
 
     quantiles_low <- x %>%
       apply(MARGIN = 1:2, FUN = quantile, na.rm = TRUE, probs = probs[1]) %>%
       as.data.frame %>%
       tibble::rownames_to_column(var = "sp") %>%
+      setDT() %>%
       data.table::melt(id.vars = "sp", variable.name = "spl_size", value.name = "ci_low")
 
     quantiles_up <- x %>%
       apply(MARGIN = 1:2, FUN = quantile, na.rm = TRUE, probs = probs[2]) %>%
       as.data.frame %>%
       tibble::rownames_to_column(var = "sp") %>%
+      setDT() %>%
       data.table::melt(id.vars = "sp", variable.name = "spl_size", value.name = "ci_up")
 
     stats_df <- list(means, quantiles_low, quantiles_up) %>%
@@ -156,6 +160,7 @@ get_stats_single <- function(x, probs = c(0.025, 0.975)){
       apply(MARGIN = 3, FUN = as.data.frame) %>%
       lapply(rownames_to_column, var = "sp") %>%
       data.table::rbindlist(idcol = "simulation_id") %>%
+      setDT() %>%
       data.table::melt(id.vars = c("sp", "simulation_id"), variable.name = "spl_size") %>%
       dplyr::mutate(spl_size = as.integer(as.character(spl_size)))
 
