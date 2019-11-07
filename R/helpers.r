@@ -667,3 +667,110 @@ test_level_value <- function(level) {
   if (! level %in% c("both", "lower", "higher"))
     stop('The value provided for `level` must be one of the following: "both", "lower" or "higher"')
 }
+
+
+#' @title
+#'  Helper used in `boot_networklevel_n()`.
+#'
+#' @description
+#'  Checks if the user gave correct values for `index`.
+#'
+#' @noRd
+test_index_networklevel <- function(index) {
+  if (length(index) != 1) stop('Provide a single value for `index`')
+
+  # As given in https://github.com/biometry/bipartite/blob/master/bipartite/R/networklevel.R at 2019-11-07
+  allindex <- c(
+    # descriptive:
+    "number of species",
+    "connectance",
+    "web asymmetry",
+    # binary based and related:
+    "links per species",
+    "number of compartments",
+    "compartment diversity",
+    "cluster coefficient",
+    "degree distribution",
+    "mean number of shared partners",
+    "togetherness",
+    "C score",
+    "V ratio",
+    "discrepancy",
+    "nestedness",
+    "NODF",
+    "weighted nestedness",
+    # miscelleneous:
+    "ISA",
+    "SA",
+    "extinction slope",
+    "robustness",
+    "niche overlap",
+    # quantitative series:
+    "weighted cluster coefficient",
+    "weighted NODF",
+    "partner diversity",
+    "generality",
+    "vulnerability",
+    "linkage density",
+    "weighted connectance",
+    "Fisher alpha",
+    "interaction evenness",
+    "Alatalo interaction evenness",
+    "Shannon diversity",
+    "functional complementarity",
+    "H2"
+  )
+
+  if (! index %in% allindex)
+    stop('Your index is not recognised. Typo? Did you mean one of these?:\n',
+         agrep(pattern = index,
+               x = allindex,
+               ignore.case = TRUE,
+               value = TRUE,
+               fixed = FALSE) %>%
+           paste(collapse = "\n"))
+}
+
+
+#' @title
+#'  Helper used in `boot_specieslevel_n()`.
+#'
+#' @description
+#'  Checks if the user gave correct values for `index`.
+#'
+#' @noRd
+test_index_specieslevel <- function(index) {
+  if (length(index) != 1) stop('Provide a single value for `index`')
+
+  # As given in https://github.com/biometry/bipartite/blob/master/bipartite/R/specieslevel.R at 2019-11-07
+  allindex <- c(
+    "degree",
+    "normalised degree",
+    "species strength",
+    "nestedrank",
+    "interaction push pull",
+    "PDI",
+    "resource range",
+    "species specificity",
+    "PSI",
+    "NSI",
+    "betweenness",
+    "closeness",
+    "Fisher alpha",
+    "partner diversity",
+    "effective partners",
+    "d",
+    "dependence",
+    "proportional generality",
+    "proportional similarity"
+  )
+
+  if (! index %in% allindex)
+    stop('Your index is not recognised. Typo? Did you mean one of these?:\n',
+         agrep(pattern = index,
+               x = allindex,
+               ignore.case = TRUE,
+               value = TRUE,
+               fixed = FALSE) %>%
+           paste(collapse = "\n"))
+}
