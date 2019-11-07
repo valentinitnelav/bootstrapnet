@@ -247,6 +247,8 @@ boot_networklevel_n <- function(data,
   cls_data <- class(data)
   if (! "data.table" %in% cls_data) data.table::setDT(data)
 
+  test_level_value(level)
+
   test_data_species_names(data, col_lower, col_higher)
 
   # Get sample sizes. Row names of the resulting bootstrap matrices will carry

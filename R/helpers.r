@@ -651,3 +651,16 @@ test_data_species_names <- function(data, col_lower, col_higher) {
   if (any(c("", "NA", "na", NA) %in% unique(data[[col_higher]])))
     stop("You have undefined/empty species names. Check the higher level species names for NA-s or empty strings.")
 }
+
+
+#' @title
+#'  Helper used in `boot_networklevel_n()` and `boot_specieslevel_n()`.
+#'
+#' @description
+#'  Checks if the user gave correct values for `level`.
+#'
+#' @noRd
+test_level_value <- function(level) {
+  if (! level %in% c("both", "lower", "higher"))
+    stop('The value provided for `level` must be one of the following: "both", "lower" or "higher"')
+}

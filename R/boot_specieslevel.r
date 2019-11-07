@@ -250,6 +250,8 @@ boot_specieslevel_n <- function(data,
   cls_data <- class(data)
   if (! "data.table" %in% class(data)) data.table::setDT(data)
 
+  test_level_value(level)
+
   test_data_species_names(data, col_lower, col_higher)
 
   # Get sample sizes. Column names of the resulting bootstrap matrices will
