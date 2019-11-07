@@ -661,6 +661,9 @@ test_data_species_names <- function(data, col_lower, col_higher) {
 #'
 #' @noRd
 test_level_value <- function(level) {
+  if (length(level) != 1)
+    stop('Provide a single value for `level`: "both", "lower" or "higher"')
+
   if (! level %in% c("both", "lower", "higher"))
     stop('The value provided for `level` must be one of the following: "both", "lower" or "higher"')
 }
