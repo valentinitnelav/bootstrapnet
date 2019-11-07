@@ -247,11 +247,7 @@ boot_networklevel_n <- function(data,
   cls_data <- class(data)
   if (! "data.table" %in% cls_data) data.table::setDT(data)
 
-  if (any(c("", "NA", "na") %in% unique(data[[col_lower]])))
-    stop("You have undefined/empty species names. Check the lower level species names for NA-s or empty strings.")
-
-  if (any(c("", "NA", "na") %in% unique(data[[col_higher]])))
-    stop("You have undefined/empty species names. Check the higher level species names for NA-s or empty strings.")
+  test_data_species_names(data, col_lower, col_higher)
 
   # Get sample sizes. Row names of the resulting bootstrap matrices will carry
   # information about the sample size at each iteration/bootstrap step. This is

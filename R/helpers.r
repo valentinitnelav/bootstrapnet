@@ -634,3 +634,20 @@ test_species_filter_compare_webs <- function(metric_names, sp_lower, sp_higher){
   if (has_higher & is.null(sp_higher))
     stop("Please provide a higher species name in `sp_higher`")
 }
+
+
+#' @title
+#'  Helper used in `boot_networklevel_n()` and `boot_specieslevel_n()`.
+#'
+#' @description
+#'  Checks if the row and column values of `data` are ok and throws errors
+#'  otherwise.
+#'
+#' @noRd
+test_data_species_names <- function(data, col_lower, col_higher) {
+  if (any(c("", "NA", "na", NA) %in% unique(data[[col_lower]])))
+    stop("You have undefined/empty species names. Check the lower level species names for NA-s or empty strings.")
+
+  if (any(c("", "NA", "na", NA) %in% unique(data[[col_higher]])))
+    stop("You have undefined/empty species names. Check the higher level species names for NA-s or empty strings.")
+}
