@@ -586,7 +586,7 @@ filter_species <- function(lst, sp_lower, sp_higher, name_metric, name_plot) {
     if (any(sp_test))
       warning("At case ", name_plot, ", ",
               "these species are not in the lower level species of the network:\n",
-              format(sp_lower[sp_test]))
+              paste(sp_lower[sp_test], collapse = "\n"))
     stats_df <- lst[["stats_df"]] %>% dplyr::filter(sp %in% sp_lower)
     lines_df <- lst[["lines_df"]] %>% dplyr::filter(sp %in% sp_lower)
 
@@ -602,7 +602,7 @@ filter_species <- function(lst, sp_lower, sp_higher, name_metric, name_plot) {
     if (any(sp_test))
       warning("At case ", name_plot, ", ",
               "these species are not in the higher level species of the network:\n",
-              format(sp_higher[sp_test]))
+              paste(sp_higher[sp_test], collapse = "\n"))
     stats_df <- lst[["stats_df"]] %>% dplyr::filter(sp %in% sp_higher)
     lines_df <- lst[["lines_df"]] %>% dplyr::filter(sp %in% sp_higher)
   }
