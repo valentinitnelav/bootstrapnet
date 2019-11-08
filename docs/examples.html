@@ -382,85 +382,88 @@ div.tocify {
 </div>
 
 
-<div id="network-level-indices-metrics" class="section level1">
-<h1>Network-level indices (metrics)</h1>
-<div id="resample-two-networks-with-computing-nestedness." class="section level2">
-<h2>Resample two networks with computing “nestedness”.</h2>
-<pre class="r"><code>library(bootstrapnet)
-library(bipartite)
+<div id="load-packages" class="section level1">
+<h1>Load packages</h1>
+<pre class="r"><code># Install bootstrapnet if not already done:
+# install.packages(&quot;devtools&quot;)
+# devtools::install_github(&quot;valentinitnelav/bootstrapnet&quot;)
+library(bootstrapnet)
 library(magrittr)
-data(Safariland)
-
-# Generate two fictive networks to compare
+library(bipartite)</code></pre>
+</div>
+<div id="simulate-data" class="section level1">
+<h1>Simulate data</h1>
+<p>Generate two fictive networks from <code>bipartite::Safariland</code> to compare with <code>bootstrapnet</code> functionality:</p>
+<pre class="r"><code>data(Safariland)
 
 set.seed(321)
 Safariland_1 &lt;- Safariland[, sort(sample.int(ncol(Safariland), 20))]
-set.seed(123)
+sum(Safariland_1) # number of interactions</code></pre>
+<pre><code>## [1] 305</code></pre>
+<pre class="r"><code>set.seed(123)
 Safariland_2 &lt;- Safariland[, sort(sample.int(ncol(Safariland), 20))]
-
-
-# Resample the two networks with computing &quot;nestedness&quot;. The computation is
-# carried in parallel.
-
-lst_nest &lt;- list(s1 = Safariland_1, s2 = Safariland_2) %&gt;%
+sum(Safariland_2)</code></pre>
+<pre><code>## [1] 210</code></pre>
+<p>Note that, <code>Safariland_1</code> has 305 interactions and <code>Safariland_2</code> has 210. This can give us an idea about the values we can use in the <code>start</code> and <code>step</code> arguments below. Presumably 10% of the interactions of the smallest network should suffice for <code>start.</code> And for <code>step</code> use 5% or 10%. Note that, very small <code>step</code> will require intensive CPU time and a very small <code>start</code> can result in many <code>NA</code> warnings because indices cannot be computed for the first small sampled networks.</p>
+<pre class="r"><code>my_start &lt;- 50 # chosen higher than 20 to gain some CPU time
+my_step &lt;- 20
+my_n_boot &lt;- 50</code></pre>
+</div>
+<div id="network-level-indicesmetrics" class="section level1">
+<h1>Network-level indices/metrics</h1>
+<div id="nestedness" class="section level2">
+<h2>nestedness</h2>
+<p><strong>Resample two networks with computing “nestedness”.</strong></p>
+<p>The two matrices (webs) are placed in a named list (<code>list(s1 = Safariland_1, s2 = Safariland_2)</code>), then the data is prepared with <code>web_matrix_to_df()</code>, which gives a suitable data format for the <code>boot_networklevel()</code> function, which further prepares the bootstrapped results for <code>ggplot</code>.</p>
+<pre class="r"><code>lst_nest &lt;- list(s1 = Safariland_1, s2 = Safariland_2) %&gt;%
   lapply(web_matrix_to_df) %&gt;%
   boot_networklevel(col_lower = &quot;lower&quot;, # column name for plants
                     col_higher = &quot;higher&quot;, # column name for insects
                     index = &quot;nestedness&quot;,
                     level = &quot;both&quot;, # here, nestedness is not affected by level
-                    start = 20,
-                    step = 10,
-                    n_boot = 100,
-                    n_cpu = 3)
-# approx. 1 min of CPU time
-
-gg_networklevel(lst_nest)</code></pre>
+                    start = my_start,
+                    step = my_step,
+                    n_boot = my_n_boot,
+                    n_cpu = 3)</code></pre>
 <!--
-saveRDS(lst_nest, file = "man/figures/README-example-nestedness-1-lst.rds")
-lst_nest <- readRDS(file = "man/figures/README-example-nestedness-1-lst.rds")
-
-library(ggplot2)
-
-ggsave(filename = "man/figures/README-example-nestedness-1.png",
-       width = 15, height = 10, units = "cm", dpi = 150)
+saveRDS(lst_nest, file = "./man/cache/README-example-nestedness-1-lst.rds")
 -->
-<p><img src="man/figures/README-example-nestedness-1.png" /></p>
+<p>Plot the bootstrap results for the two webs.</p>
+<pre class="r"><code>gg_networklevel(lst_nest)</code></pre>
+<pre><code>## $nestedness</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>The dashed lines represent the quantile based 95% confidence intervals. The continuous thicker lines represent the mean values at different sample sizes. The final sample sizes are actually the entire webs (total number of interactions). Each bootstrap/iteration is represented by a thinner transparent line.</p>
 </div>
-<div id="resample-two-networks-with-computing-niche-overlap." class="section level2">
-<h2>Resample two networks with computing “niche overlap”.</h2>
-<p>The computation here is carried for both species levels (lower and higher, so plants and insects). If you are interested only in one level then specify that with the parameter <code>level</code> (<code>level = 'lower'</code> or <code>level = 'higher'</code>).</p>
+<div id="niche-overlap" class="section level2">
+<h2>niche overlap</h2>
+<p><strong>Resample two networks with computing “niche overlap”.</strong></p>
+<p>The computation here is carried for both species levels (lower and higher, so plants and insects). If you are interested only in one level, then specify that with the parameter <code>level</code> (<code>level = 'lower'</code> or <code>level = 'higher'</code>).</p>
 <pre class="r"><code>lst_niov &lt;- list(s1 = Safariland_1, s2 = Safariland_2) %&gt;%
   lapply(web_matrix_to_df) %&gt;%
   boot_networklevel(col_lower = &quot;lower&quot;, # column name for plants
                     col_higher = &quot;higher&quot;, # column name for insects
                     index = &quot;niche overlap&quot;,
                     level = &quot;both&quot;, # for both levels (lower &amp; higher)
-                    start = 20,
-                    step = 10,
-                    n_boot = 100,
-                    n_cpu = 3)
-
-niov_gg &lt;- gg_networklevel(lst_niov)
-niov_gg$niche.overlap.HL # for higher level species
-niov_gg$niche.overlap.LL # for lower level species</code></pre>
+                    start = my_start,
+                    step = my_step,
+                    n_boot = my_n_boot,
+                    n_cpu = 3)</code></pre>
 <!--
-saveRDS(lst_niov, file = "man/figures/README-example-niche-overlap-1-lst.rds")
-lst_niov <- readRDS(file = "man/figures/README-example-niche-overlap-1-lst.rds")
-
-ggsave(filename = "man/figures/README-example-niche-overlap-HL.png",
-       plot = niov_gg$niche.overlap.HL,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-niche-overlap-LL.png",
-       plot = niov_gg$niche.overlap.LL,
-       width = 15, height = 10, units = "cm", dpi = 150)
+saveRDS(lst_niov, file = "man/cache/README-example-niche-overlap-1-lst.rds")
 -->
-<p><img src="man/figures/README-example-niche-overlap-HL.png" /> <img src="man/figures/README-example-niche-overlap-LL.png" /></p>
+<p>Plot the bootstrap results.</p>
+<pre class="r"><code>niov_gg &lt;- gg_networklevel(lst_niov)
+niov_gg$niche.overlap.HL # for higher level species</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>niov_gg$niche.overlap.LL # for lower level species</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
 </div>
 </div>
-<div id="species-level-indices-metrics" class="section level1">
-<h1>Species-level indices (metrics)</h1>
-<div id="resample-two-networks-with-computing-betweenness." class="section level2">
-<h2>Resample two networks with computing “betweenness”.</h2>
+<div id="species-level-indicesmetrics" class="section level1">
+<h1>Species-level indices/metrics</h1>
+<div id="betweenness" class="section level2">
+<h2>betweenness</h2>
+<p><strong>Resample two networks with computing “betweenness”.</strong></p>
 <p>Compare “betweenness” of ‘Alstroemeria aurea’ (lower level species) between the two networks. Also compare the betweenes of ‘Allograpta.Toxomerus’ (higher level species).</p>
 <p>If you are interested only in the lower or higher level species computations, then set the parameter <code>level</code> accordingly (<code>level = 'lower'</code> or <code>level = 'higher'</code>). In such cases, then specify only one of the <code>sp_lower</code> and <code>sp_higher</code> in the plotting functions <code>gg_specieslevel_compare_webs</code> or <code>gg_specieslevel_web_by_web</code>.</p>
 <pre class="r"><code>lst_btw &lt;- list(s1 = Safariland_1, s2 = Safariland_2) %&gt;%
@@ -469,34 +472,32 @@ ggsave(filename = "man/figures/README-example-niche-overlap-LL.png",
                     col_higher = &quot;higher&quot;, # column name for insects
                     index = &quot;betweenness&quot;,
                     level = &quot;both&quot;, # for both levels (lower &amp; higher)
-                    start = 20,
-                    step = 20,
-                    n_boot = 100,
-                    n_cpu = 3)
-
-btw_comp_Aa_At_gg &lt;- lst_btw %&gt;%
+                    start = my_start,
+                    step = my_step,
+                    n_boot = my_n_boot,
+                    n_cpu = 3)</code></pre>
+<!--
+saveRDS(lst_btw, file = "man/cache/README-example-betweenness-1-lst.rds")
+-->
+<p>Plot the bootstrap results.</p>
+<pre class="r"><code>btw_comp_Aa_At_gg &lt;- lst_btw %&gt;%
   get_stats_multi() %&gt;%
   gg_specieslevel_compare_webs(sp_lower = &quot;Alstroemeria aurea&quot;,
                                sp_higher = &quot;Allograpta.Toxomerus&quot;)
 btw_comp_Aa_At_gg # plot all</code></pre>
-<!--
-saveRDS(lst_btw, file = "man/figures/README-example-betweenness-1-lst.rds")
-lst_btw <- readRDS(file = "man/figures/README-example-betweenness-1-lst.rds")
-
-ggsave(filename = "man/figures/README-example-betweenness-LL.png",
-       plot = btw_comp_Aa_At_gg$lower_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-LLW.png",
-       plot = btw_comp_Aa_At_gg$lower_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-HL.png",
-       plot = btw_comp_Aa_At_gg$higher_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-HLW.png",
-       plot = btw_comp_Aa_At_gg$higher_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
--->
-<p><img src="man/figures/README-example-betweenness-LL.png" /> <img src="man/figures/README-example-betweenness-LLW.png" /> <img src="man/figures/README-example-betweenness-HL.png" /> <img src="man/figures/README-example-betweenness-HLW.png" /></p>
+<pre><code>## $higher_level</code></pre>
+<pre><code>## Warning: Removed 32 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre><code>## 
+## $higher_level_weighted</code></pre>
+<pre><code>## Warning: Removed 32 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<pre><code>## 
+## $lower_level</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<pre><code>## 
+## $lower_level_weighted</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-10-4.png" width="672" /></p>
 <p>Plot resampled betweenness of all species at both levels of selected common species.</p>
 <p>Selected common species:</p>
 <pre class="r"><code>common_lower_sp &lt;- intersect(rownames(Safariland_1), rownames(Safariland_2))
@@ -507,38 +508,106 @@ btw_sp_webs_gg &lt;- lst_btw %&gt;%
                              sp_higher = common_higher_sp[1:5])
 
 btw_sp_webs_gg</code></pre>
-<!--
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S1LL.png",
-       plot = btw_sp_webs_gg$s1.lower_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S1LLW.png",
-       plot = btw_sp_webs_gg$s1.lower_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S1HL.png",
-       plot = btw_sp_webs_gg$s1.higher_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S1HLW.png",
-       plot = btw_sp_webs_gg$s1.higher_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
-
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S2LL.png",
-       plot = btw_sp_webs_gg$s2.lower_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S2LLW.png",
-       plot = btw_sp_webs_gg$s2.lower_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S2HL.png",
-       plot = btw_sp_webs_gg$s2.higher_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S2HLW.png",
-       plot = btw_sp_webs_gg$s2.higher_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
--->
-<p><img src="man/figures/README-example-betweenness-common-sp-S1LL.png" /> <img src="man/figures/README-example-betweenness-common-sp-S1LLW.png" /> <img src="man/figures/README-example-betweenness-common-sp-S1HL.png" /> <img src="man/figures/README-example-betweenness-common-sp-S1HLW.png" /> <img src="man/figures/README-example-betweenness-common-sp-S2LL.png" /> <img src="man/figures/README-example-betweenness-common-sp-S2LLW.png" /> <img src="man/figures/README-example-betweenness-common-sp-S2HL.png" /> <img src="man/figures/README-example-betweenness-common-sp-S2HLW.png" /></p>
+<pre><code>## $s1.higher_level</code></pre>
+<pre><code>## Warning: Removed 775 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre><code>## 
+## $s1.higher_level_weighted</code></pre>
+<pre><code>## Warning: Removed 780 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<pre><code>## 
+## $s1.lower_level</code></pre>
+<pre><code>## Warning: Removed 266 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-11-3.png" width="672" /></p>
+<pre><code>## 
+## $s1.lower_level_weighted</code></pre>
+<pre><code>## Warning: Removed 540 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-11-4.png" width="672" /></p>
+<pre><code>## 
+## $s2.higher_level</code></pre>
+<pre><code>## Warning: Removed 482 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-11-5.png" width="672" /></p>
+<pre><code>## 
+## $s2.higher_level_weighted</code></pre>
+<pre><code>## Warning: Removed 482 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-11-6.png" width="672" /></p>
+<pre><code>## 
+## $s2.lower_level</code></pre>
+<pre><code>## Warning: Removed 24 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-11-7.png" width="672" /></p>
+<pre><code>## 
+## $s2.lower_level_weighted</code></pre>
+<pre><code>## Warning: Removed 198 rows containing missing values (geom_path).</code></pre>
+<p><img src="examples_files/figure-html/unnamed-chunk-11-8.png" width="672" /></p>
 <p>To plot betweenness of all species at all levels for each web/network, just leave the parameters <code>sp_lower</code> and <code>sp_higher</code> to default to <code>NULL</code>.</p>
 <pre class="r"><code>btw_sp_webs_gg_all &lt;- lst_btw %&gt;%
   gg_specieslevel_web_by_web()</code></pre>
+<pre><code>## Warning in filter_species(lst = metrics_stats[[i]], sp_lower = sp_lower, :
+## `sp_higher` not provided, all higher level species will be used!
+
+## Warning in filter_species(lst = metrics_stats[[i]], sp_lower = sp_lower, :
+## `sp_higher` not provided, all higher level species will be used!</code></pre>
+<pre><code>## Warning in filter_species(lst = metrics_stats[[i]], sp_lower = sp_lower, :
+## `sp_lower` not provided, all lower level species will be used!
+
+## Warning in filter_species(lst = metrics_stats[[i]], sp_lower = sp_lower, :
+## `sp_lower` not provided, all lower level species will be used!</code></pre>
+<pre><code>## Warning in filter_species(lst = metrics_stats[[i]], sp_lower = sp_lower, :
+## `sp_higher` not provided, all higher level species will be used!
+
+## Warning in filter_species(lst = metrics_stats[[i]], sp_lower = sp_lower, :
+## `sp_higher` not provided, all higher level species will be used!</code></pre>
+<pre><code>## Warning in filter_species(lst = metrics_stats[[i]], sp_lower = sp_lower, :
+## `sp_lower` not provided, all lower level species will be used!
+
+## Warning in filter_species(lst = metrics_stats[[i]], sp_lower = sp_lower, :
+## `sp_lower` not provided, all lower level species will be used!</code></pre>
 </div>
+</div>
+<div id="r-session-info" class="section level1">
+<h1>R Session info</h1>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 3.6.1 (2019-07-05)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 7 x64 (build 7601) Service Pack 1
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_United States.1252 
+## [2] LC_CTYPE=English_United States.1252   
+## [3] LC_MONETARY=English_United States.1252
+## [4] LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] bipartite_2.13          sna_2.4                 network_1.15           
+## [4] statnet.common_4.3.0    vegan_2.5-6             lattice_0.20-38        
+## [7] permute_0.9-5           magrittr_1.5            bootstrapnet_0.0.0.9000
+## 
+## loaded via a namespace (and not attached):
+##  [1] spam_2.4-0         tidyselect_0.2.5   xfun_0.10         
+##  [4] purrr_0.3.3        splines_3.6.1      colorspace_1.4-1  
+##  [7] vctrs_0.2.0        htmltools_0.4.0    yaml_2.2.0        
+## [10] mgcv_1.8-28        rlang_0.4.1        pillar_1.4.2      
+## [13] glue_1.3.1         matrixStats_0.54.0 foreach_1.4.7     
+## [16] lifecycle_0.1.0    stringr_1.4.0      fields_9.9        
+## [19] dotCall64_1.0-0    munsell_0.5.0      gtable_0.3.0      
+## [22] evaluate_0.14      codetools_0.2-16   coda_0.19-3       
+## [25] labeling_0.3       knitr_1.25         doParallel_1.0.15 
+## [28] parallel_3.6.1     Rcpp_1.0.2         scales_1.0.0      
+## [31] backports_1.1.5    ggplot2_3.2.1      digest_0.6.22     
+## [34] stringi_1.4.3      dplyr_0.8.3        grid_3.6.1        
+## [37] tools_3.6.1        maps_3.3.0         lazyeval_0.2.2    
+## [40] tibble_2.1.3       cluster_2.1.0      crayon_1.3.4      
+## [43] tidyr_1.0.0        pkgconfig_2.0.3    zeallot_0.1.0     
+## [46] MASS_7.3-51.4      ellipsis_0.3.0     Matrix_1.2-17     
+## [49] data.table_1.12.6  rmarkdown_1.16     assertthat_0.2.1  
+## [52] rstudioapi_0.10    iterators_1.0.12   R6_2.4.0          
+## [55] igraph_1.2.4.1     nlme_3.1-141       compiler_3.6.1</code></pre>
 </div>
 
 

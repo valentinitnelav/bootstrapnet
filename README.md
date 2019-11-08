@@ -67,13 +67,13 @@ gg_networklevel(lst_nest)
 ```
 
 <!--
-saveRDS(lst_nest, file = "man/figures/README-example-nestedness-1-lst.rds")
-lst_nest <- readRDS(file = "man/figures/README-example-nestedness-1-lst.rds")
+saveRDS(lst_nest, file = "man/cache/README-example-nestedness-1-lst.rds")
+lst_nest <- readRDS(file = "man/cache/README-example-nestedness-1-lst.rds")
 
 library(ggplot2)
 
-ggsave(filename = "man/figures/README-example-nestedness-1.png",
+ggsave(filename = "man/cache/README-example-nestedness-1.png",
        width = 15, height = 10, units = "cm", dpi = 150)
 -->
 
-![](man/figures/README-example-nestedness-1.png)
+![](man/cache/README-example-nestedness-1.png)

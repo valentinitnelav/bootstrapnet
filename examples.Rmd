@@ -3,113 +3,141 @@ title: "bootstrapnet - Examples"
 author: "by [Valentin Stefan](https://github.com/valentinitnelav) - last update `r format(Sys.time(), '%d %B %Y')`"
 ---
 
-# Network-level indices (metrics)
+```{r setup, include=FALSE}
+# For avoiding long waiting time, read already saved/cached objects
+lst_nest <- readRDS(file = "./man/cache/README-example-nestedness-1-lst.rds")
+lst_niov <- readRDS(file = "./man/cache/README-example-niche-overlap-1-lst.rds")
+lst_btw <- readRDS(file = "./man/cache/README-example-betweenness-1-lst.rds")
+```
 
-## Resample two networks with computing "nestedness".
+# Load packages
 
-``` r
+```{r load-packages, message=FALSE, warning=FALSE}
+# Install bootstrapnet if not already done:
+# install.packages("devtools")
+# devtools::install_github("valentinitnelav/bootstrapnet")
 library(bootstrapnet)
-library(bipartite)
 library(magrittr)
-data(Safariland)
+library(bipartite)
+```
 
-# Generate two fictive networks to compare
+# Simulate data
+
+Generate two fictive networks from `bipartite::Safariland` to compare with `bootstrapnet` functionality:
+
+```{r}
+data(Safariland)
 
 set.seed(321)
 Safariland_1 <- Safariland[, sort(sample.int(ncol(Safariland), 20))]
+sum(Safariland_1) # number of interactions
+
 set.seed(123)
 Safariland_2 <- Safariland[, sort(sample.int(ncol(Safariland), 20))]
+sum(Safariland_2)
+```
 
+Note that, `Safariland_1` has `r sum(Safariland_1)` interactions and `Safariland_2` has `r sum(Safariland_2)`. This can give us an idea about the values we can use in the `start` and `step` arguments below. Presumably 10% of the interactions of the smallest network should suffice for `start.` And for `step` use 5% or 10%. 
+Note that, very small `step` will require intensive CPU time and a very small `start` can result in many `NA` warnings because indices cannot be computed for the first small sampled networks.
 
-# Resample the two networks with computing "nestedness". The computation is
-# carried in parallel.
+```{r}
+my_start <- 50 # chosen higher than 20 to gain some CPU time
+my_step <- 20
+my_n_boot <- 50
+```
 
+# Network-level indices/metrics
+
+## nestedness
+
+**Resample two networks with computing "nestedness".**
+
+The two matrices (webs) are placed in a named list (`list(s1 = Safariland_1, s2 = Safariland_2)`), then the data is prepared with `web_matrix_to_df()`, which gives a suitable data format for the `boot_networklevel()` function, which further prepares the bootstrapped results for `ggplot`. 
+
+```{r nestedness, eval=FALSE}
 lst_nest <- list(s1 = Safariland_1, s2 = Safariland_2) %>%
   lapply(web_matrix_to_df) %>%
   boot_networklevel(col_lower = "lower", # column name for plants
                     col_higher = "higher", # column name for insects
                     index = "nestedness",
                     level = "both", # here, nestedness is not affected by level
-                    start = 20,
-                    step = 10,
-                    n_boot = 100,
+                    start = my_start,
+                    step = my_step,
+                    n_boot = my_n_boot,
                     n_cpu = 3)
-# approx. 1 min of CPU time
+```
+<!--
+saveRDS(lst_nest, file = "./man/cache/README-example-nestedness-1-lst.rds")
+-->
 
+Plot the bootstrap results for the two webs.
+
+```{r}
 gg_networklevel(lst_nest)
 ```
 
-<!--
-saveRDS(lst_nest, file = "man/figures/README-example-nestedness-1-lst.rds")
-lst_nest <- readRDS(file = "man/figures/README-example-nestedness-1-lst.rds")
+The dashed lines represent the quantile based 95% confidence intervals. The continuous thicker lines represent the mean values at different sample sizes. The final sample sizes are actually the entire webs (total number of interactions). Each bootstrap/iteration is represented by a thinner transparent line.
 
-library(ggplot2)
+## niche overlap
 
-ggsave(filename = "man/figures/README-example-nestedness-1.png",
-       width = 15, height = 10, units = "cm", dpi = 150)
--->
+**Resample two networks with computing "niche overlap".**
 
-![](man/figures/README-example-nestedness-1.png)
+The computation here is carried for both species levels (lower and higher, so plants and insects). If you are interested only in one level, then specify that with the parameter `level` (`level = 'lower'` or `level = 'higher'`).
 
-
-## Resample two networks with computing "niche overlap".
-
-The computation here is carried for both species levels (lower and higher, so plants and insects). If you are interested only in one level then specify that with the parameter `level` (`level = 'lower'` or `level = 'higher'`).
-
-``` r
+```{r, eval=FALSE}
 lst_niov <- list(s1 = Safariland_1, s2 = Safariland_2) %>%
   lapply(web_matrix_to_df) %>%
   boot_networklevel(col_lower = "lower", # column name for plants
                     col_higher = "higher", # column name for insects
                     index = "niche overlap",
                     level = "both", # for both levels (lower & higher)
-                    start = 20,
-                    step = 10,
-                    n_boot = 100,
+                    start = my_start,
+                    step = my_step,
+                    n_boot = my_n_boot,
                     n_cpu = 3)
+```
+<!--
+saveRDS(lst_niov, file = "man/cache/README-example-niche-overlap-1-lst.rds")
+-->
 
+Plot the bootstrap results.
+
+```{r}
 niov_gg <- gg_networklevel(lst_niov)
 niov_gg$niche.overlap.HL # for higher level species
 niov_gg$niche.overlap.LL # for lower level species
 ```
 
-<!--
-saveRDS(lst_niov, file = "man/figures/README-example-niche-overlap-1-lst.rds")
-lst_niov <- readRDS(file = "man/figures/README-example-niche-overlap-1-lst.rds")
+# Species-level indices/metrics
 
-ggsave(filename = "man/figures/README-example-niche-overlap-HL.png",
-       plot = niov_gg$niche.overlap.HL,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-niche-overlap-LL.png",
-       plot = niov_gg$niche.overlap.LL,
-       width = 15, height = 10, units = "cm", dpi = 150)
--->
+## betweenness
 
-![](man/figures/README-example-niche-overlap-HL.png)
-![](man/figures/README-example-niche-overlap-LL.png)
-
-
-# Species-level indices (metrics)
-
-## Resample two networks with computing "betweenness".
+**Resample two networks with computing "betweenness".**
 
 Compare "betweenness" of 'Alstroemeria aurea' (lower level species) between the two networks.
 Also compare the betweenes of 'Allograpta.Toxomerus' (higher level species).
 
 If you are interested only in the lower or higher level species computations, then set the parameter `level` accordingly (`level = 'lower'` or `level = 'higher'`). In such cases, then specify only one of the `sp_lower` and `sp_higher` in the plotting functions `gg_specieslevel_compare_webs` or `gg_specieslevel_web_by_web`.
 
-``` r
+```{r, eval=FALSE}
 lst_btw <- list(s1 = Safariland_1, s2 = Safariland_2) %>%
   lapply(web_matrix_to_df) %>%
   boot_specieslevel(col_lower = "lower", # column name for plants
                     col_higher = "higher", # column name for insects
                     index = "betweenness",
                     level = "both", # for both levels (lower & higher)
-                    start = 20,
-                    step = 20,
-                    n_boot = 100,
+                    start = my_start,
+                    step = my_step,
+                    n_boot = my_n_boot,
                     n_cpu = 3)
+```
+<!--
+saveRDS(lst_btw, file = "man/cache/README-example-betweenness-1-lst.rds")
+-->
 
+Plot the bootstrap results.
+
+```{r}
 btw_comp_Aa_At_gg <- lst_btw %>%
   get_stats_multi() %>%
   gg_specieslevel_compare_webs(sp_lower = "Alstroemeria aurea",
@@ -117,35 +145,11 @@ btw_comp_Aa_At_gg <- lst_btw %>%
 btw_comp_Aa_At_gg # plot all
 ```
 
-<!--
-saveRDS(lst_btw, file = "man/figures/README-example-betweenness-1-lst.rds")
-lst_btw <- readRDS(file = "man/figures/README-example-betweenness-1-lst.rds")
-
-ggsave(filename = "man/figures/README-example-betweenness-LL.png",
-       plot = btw_comp_Aa_At_gg$lower_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-LLW.png",
-       plot = btw_comp_Aa_At_gg$lower_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-HL.png",
-       plot = btw_comp_Aa_At_gg$higher_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-HLW.png",
-       plot = btw_comp_Aa_At_gg$higher_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
--->
-
-![](man/figures/README-example-betweenness-LL.png)
-![](man/figures/README-example-betweenness-LLW.png)
-![](man/figures/README-example-betweenness-HL.png)
-![](man/figures/README-example-betweenness-HLW.png)
-
-
 Plot resampled betweenness of all species at both levels of selected common species.
 
 Selected common species:
 
-``` r
+```{r}
 common_lower_sp <- intersect(rownames(Safariland_1), rownames(Safariland_2))
 common_higher_sp <- intersect(colnames(Safariland_1), colnames(Safariland_2))
 
@@ -156,46 +160,15 @@ btw_sp_webs_gg <- lst_btw %>%
 btw_sp_webs_gg
 ```
 
-<!--
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S1LL.png",
-       plot = btw_sp_webs_gg$s1.lower_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S1LLW.png",
-       plot = btw_sp_webs_gg$s1.lower_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S1HL.png",
-       plot = btw_sp_webs_gg$s1.higher_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S1HLW.png",
-       plot = btw_sp_webs_gg$s1.higher_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
-
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S2LL.png",
-       plot = btw_sp_webs_gg$s2.lower_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S2LLW.png",
-       plot = btw_sp_webs_gg$s2.lower_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S2HL.png",
-       plot = btw_sp_webs_gg$s2.higher_level,
-       width = 15, height = 10, units = "cm", dpi = 150)
-ggsave(filename = "man/figures/README-example-betweenness-common-sp-S2HLW.png",
-       plot = btw_sp_webs_gg$s2.higher_level_weighted,
-       width = 15, height = 10, units = "cm", dpi = 150)
--->
-
-![](man/figures/README-example-betweenness-common-sp-S1LL.png)
-![](man/figures/README-example-betweenness-common-sp-S1LLW.png)
-![](man/figures/README-example-betweenness-common-sp-S1HL.png)
-![](man/figures/README-example-betweenness-common-sp-S1HLW.png)
-![](man/figures/README-example-betweenness-common-sp-S2LL.png)
-![](man/figures/README-example-betweenness-common-sp-S2LLW.png)
-![](man/figures/README-example-betweenness-common-sp-S2HL.png)
-![](man/figures/README-example-betweenness-common-sp-S2HLW.png)
-
 To plot betweenness of all species at all levels for each web/network, just leave the parameters `sp_lower` and `sp_higher` to default to `NULL`.
 
-``` r
+```{r}
 btw_sp_webs_gg_all <- lst_btw %>%
   gg_specieslevel_web_by_web()
+```
+
+# R Session info
+
+```{r r-session-info}
+sessionInfo()
 ```
