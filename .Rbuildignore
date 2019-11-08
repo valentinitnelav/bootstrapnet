@@ -1,4 +1,4 @@
-^bootstrapnet\.Rproj$
+^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^_not_include$
