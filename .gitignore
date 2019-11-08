@@ -1,3 +1,9 @@
 .Rproj.user
 _not_include
 .Rhistory
+docs/man
+docs/R
+docs/tests
+docs/DESCRIPTION
+docs/LICENSE
+docs/NAMESPACE
