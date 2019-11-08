@@ -1,4 +1,4 @@
-^bootstrapnet\.Rproj$
+^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^_not_include$
@@ -12,3 +12,7 @@
 ^html$
 ^\.RData
 ^appveyor\.yml$
+^docs$
+^_site\.yml$
+^index\.Rmd$
+^examples\.Rmd$
