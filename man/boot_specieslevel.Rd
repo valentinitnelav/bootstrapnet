@@ -5,8 +5,19 @@
 \title{Prepare for plotting the bootstrapped metrics at the species level of one or
 multiple networks.}
 \usage{
-boot_specieslevel(lst, col_lower, col_higher, index, level, start, step,
-  n_boot, n_cpu, probs = c(0.025, 0.975), ...)
+boot_specieslevel(
+  lst,
+  col_lower,
+  col_higher,
+  index,
+  level,
+  start,
+  step,
+  n_boot,
+  n_cpu,
+  probs = c(0.025, 0.975),
+  ...
+)
 }
 \arguments{
 \item{lst}{A list of one or multiple data frames of interactions from which to build
@@ -29,22 +40,22 @@ level-specific indices be computed: 'both' (default), 'lower' or 'higher'?}
 \item{start}{Integer. The sample size (number of interactions) to start the bootstrap
 with. If the start sample size is small (e.g. 5 or 10), then first
 iterations might results in NaN-s and warning messages are displayed.
-Consider to set \code{start} to maybe 10\% of your total unique interactions.}
+Consider to set \code{start} to maybe 10\\\% of your total unique interactions.}
 
 \item{step}{Integer. Sample size (number of interactions) used to increase gradually the
 sampled network until all interactions are sampled. If \code{step} is too small
 (e.g. 1) then the computation time is very long depending on your total
 number of interactions from which samples are taken. Consider to set \code{step}
-to maybe 5-10\% of your total unique interactions.}
+to maybe 5-10\\\% of your total unique interactions.}
 
 \item{n_boot}{Number of desired bootstraps (50 or 100 can be enough).}
 
 \item{n_cpu}{Number of CPU-s to use for parallel processing.}
 
-\item{probs}{A numeric vector of two probabilities in \code{[0, 1]}. Passed to
+\item{probs}{A numeric vector of two probabilities in \verb{[0, 1]}. Passed to
 \code{\link[matrixStats]{rowQuantiles}} and used for building the lower and
 upper bounds of the confidence intervals. Defaults to \code{c(0.025, 0.975)},
-which corresponds to a 95\% confidence interval.}
+which corresponds to a 95\\\% confidence interval.}
 
 \item{...}{Other arguments passed to \code{\link[bipartite]{specieslevel}}.}
 }

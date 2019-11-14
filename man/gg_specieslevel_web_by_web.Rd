@@ -4,9 +4,17 @@
 \alias{gg_specieslevel_web_by_web}
 \title{Plot bootstrapped species level metrics for one or more webs/networks.}
 \usage{
-gg_specieslevel_web_by_web(metrics_stats, sp_lower = NULL,
-  sp_higher = NULL, size_boot_lines = 0.1, alpha_boot_lines = 0.1,
-  size_ci = 1, linetype_ci = 2, size_mean = 1, linetype_mean = 1)
+gg_specieslevel_web_by_web(
+  metrics_stats,
+  sp_lower = NULL,
+  sp_higher = NULL,
+  size_boot_lines = 0.1,
+  alpha_boot_lines = 0.1,
+  size_ci = 1,
+  linetype_ci = 2,
+  size_mean = 1,
+  linetype_mean = 1
+)
 }
 \arguments{
 \item{metrics_stats}{The output of \code{\link[bootstrapnet]{get_stats_multi}}.}

@@ -12,10 +12,10 @@ get_stats_single(x, probs = c(0.025, 0.975))
 \code{\link[bootstrapnet]{boot_networklevel_n}} or
 \code{\link[bootstrapnet]{boot_specieslevel_n}}.}
 
-\item{probs}{A numeric vector of two probabilities in \code{[0, 1]}. Passed to
+\item{probs}{A numeric vector of two probabilities in \verb{[0, 1]}. Passed to
 \code{\link[matrixStats]{rowQuantiles}} and used for building the lower and
 upper bounds of the confidence intervals. Defaults to \code{c(0.025, 0.975)},
-which corresponds to a 95\% confidence interval.}
+which corresponds to a 95\\\% confidence interval.}
 }
 \value{
 A list of two data frames to be used with \code{\link[ggplot2]{ggplot}}.

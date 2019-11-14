@@ -66,7 +66,7 @@ web_matrix_to_df <- function(web, seed = 42){
 #'  A numeric vector of two probabilities in `[0, 1]`. Passed to
 #'  \code{\link[matrixStats]{rowQuantiles}} and used for building the lower and
 #'  upper bounds of the confidence intervals. Defaults to `c(0.025, 0.975)`,
-#'  which corresponds to a 95\% confidence interval.
+#'  which corresponds to a 95\\% confidence interval.
 #'
 #' @return
 #'  A list of two data frames to be used with \code{\link[ggplot2]{ggplot}}.
@@ -655,6 +655,53 @@ test_data_species_names <- function(data, col_lower, col_higher) {
 
   if (any(c("", "NA", "na", NA) %in% unique(data[[col_higher]])))
     stop("You have undefined/empty species names. Check the higher level species names for NA-s or empty strings.")
+}
+
+
+#' @title
+#'  Helper used in `boot_networklevel_n()` and `boot_specieslevel_n()`.
+#'
+#' @description
+#'  Checks if:
+#'  - the `data` argument is a non-empty `data.frame` or `data.table` class,
+#'  - data should have at least 3 columns (e.g.: plants, insects, counts),
+#'  - the columns names should match the user input for `col_lower` and `col_higher`,
+#'  - each interaction (row) was repeated as many times as it was observed
+#'
+#' @noRd
+test_data <- function(data, col_lower, col_higher) {
+  if ( ! inherits(data, what = c("data.frame", "data.table")) )
+    strwrap('`data` must be a data.frame or data.table.
+             Maybe check out the function web_matrix_to_df() for examples.',
+            prefix = " ", initial = "") %>% stop()
+
+  if ( dim(data)[1] == 0 )
+    strwrap('Your `data` has no rows.
+             Maybe check out the function web_matrix_to_df() for examples.',
+            prefix = " ", initial = "") %>% stop()
+
+  if ( dim(data)[2] < 3 )
+    strwrap('`data` must have at least 3 columns, e.g: plants, insects, counts.
+             Maybe check out the function web_matrix_to_df() for examples.',
+            prefix = " ", initial = "") %>% stop()
+
+  if ( ! col_lower %in% colnames(data) )
+    paste0('Cannot find the column name provided in `col_lower` as a column of `data`.
+            Maybe a typo? You gave: <', col_lower, '>, but columns in data are: ',
+           paste(colnames(data), collapse = ", ")) %>%
+    strwrap(prefix = " ", initial = "") %>% stop()
+
+  if ( ! col_higher %in% colnames(data) )
+    paste0('Cannot find the column name provided in `col_higher` as a column of `data`.
+            Maybe a typo? You gave: <', col_higher, '>, but columns in data are: ',
+           paste(colnames(data), collapse = ", ")) %>%
+    strwrap(prefix = " ", initial = "") %>% stop()
+
+  if ( nrow(data) == unique(data) %>% nrow() )
+    strwrap('Each interaction (row) should be repeated as many times as it was observed.
+             If you indeed observed each interaction just once, then carry on.
+             Maybe check out the function web_matrix_to_df() for examples.',
+            prefix = " ", initial = "") %>% warning()
 }
 
 

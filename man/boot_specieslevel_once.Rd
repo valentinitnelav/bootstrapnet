@@ -4,8 +4,17 @@
 \alias{boot_specieslevel_once}
 \title{Bootstrap metric at the species level once.}
 \usage{
-boot_specieslevel_once(data, col_lower, col_higher, index, level, start,
-  step, seed, ...)
+boot_specieslevel_once(
+  data,
+  col_lower,
+  col_higher,
+  index,
+  level,
+  start,
+  step,
+  seed,
+  ...
+)
 }
 \arguments{
 \item{data}{See \code{\link[bootstrapnet]{boot_specieslevel_n}}.}

@@ -3,7 +3,6 @@
 \docType{package}
 \name{plotbiomes}
 \alias{plotbiomes}
-\alias{plotbiomes-package}
 \title{Bootstrap network indices}
 \description{
 R package for resampling network metrics/indices (bootstrapping without

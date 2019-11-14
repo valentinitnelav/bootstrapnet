@@ -4,9 +4,15 @@
 \alias{gg_networklevel}
 \title{Plot bootstrapped network level metrics for one or multiple networks.}
 \usage{
-gg_networklevel(metrics_stats, size_boot_lines = 0.1,
-  alpha_boot_lines = 0.1, size_ci = 1, linetype_ci = 2,
-  size_mean = 1, linetype_mean = 1)
+gg_networklevel(
+  metrics_stats,
+  size_boot_lines = 0.1,
+  alpha_boot_lines = 0.1,
+  size_ci = 1,
+  linetype_ci = 2,
+  size_mean = 1,
+  linetype_mean = 1
+)
 }
 \arguments{
 \item{metrics_stats}{The output of \code{\link[bootstrapnet]{boot_networklevel}}.}

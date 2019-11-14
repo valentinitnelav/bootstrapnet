@@ -4,8 +4,17 @@
 \alias{boot_networklevel_once}
 \title{Bootstrap network level metric once.}
 \usage{
-boot_networklevel_once(data, col_lower, col_higher, index, level, start,
-  step, seed, ...)
+boot_networklevel_once(
+  data,
+  col_lower,
+  col_higher,
+  index,
+  level,
+  start,
+  step,
+  seed,
+  ...
+)
 }
 \arguments{
 \item{data}{See \code{\link[bootstrapnet]{boot_networklevel_n}}.}

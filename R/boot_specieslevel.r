@@ -38,14 +38,14 @@
 #'  Integer. The sample size (number of interactions) to start the bootstrap
 #'  with. If the start sample size is small (e.g. 5 or 10), then first
 #'  iterations might results in NaN-s and warning messages are displayed.
-#'  Consider to set `start` to maybe 10\% of your total unique interactions.
+#'  Consider to set `start` to maybe 10\\% of your total unique interactions.
 #'
 #' @param step
 #'  Integer. Sample size (number of interactions) used to increase gradually the
 #'  sampled network until all interactions are sampled. If `step` is too small
 #'  (e.g. 1) then the computation time is very long depending on your total
 #'  number of interactions from which samples are taken. Consider to set `step`
-#'  to maybe 5-10\% of your total unique interactions.
+#'  to maybe 5-10\\% of your total unique interactions.
 #'
 #' @param n_boot
 #'  Number of desired bootstraps (50 or 100 can be enough).
@@ -57,7 +57,7 @@
 #'  A numeric vector of two probabilities in `[0, 1]`. Passed to
 #'  \code{\link[matrixStats]{rowQuantiles}} and used for building the lower and
 #'  upper bounds of the confidence intervals. Defaults to `c(0.025, 0.975)`,
-#'  which corresponds to a 95\% confidence interval.
+#'  which corresponds to a 95\\% confidence interval.
 #'
 #' @param ...
 #'  Other arguments passed to \code{\link[bipartite]{specieslevel}}.
@@ -180,14 +180,14 @@ boot_specieslevel <- function(lst,
 #'  Integer. The sample size (number of interactions) to start the bootstrap
 #'  with. If the start sample size is small (e.g. 5 or 10), then first
 #'  iterations might results in NaN-s and warning messages are displayed.
-#'  Consider to set `start` to maybe 10\% of your total unique interactions.
+#'  Consider to set `start` to maybe 10\\% of your total unique interactions.
 #'
 #' @param step
 #'  Integer. Sample size (number of interactions) used to increase gradually the
 #'  sampled network until all interactions are sampled. If `step` is too small
 #'  (e.g. 1) then the computation time is very long depending on your total
 #'  number of interactions from which samples are taken. Consider to set `step`
-#'  to maybe 5-10\% of your total unique interactions.
+#'  to maybe 5-10\\% of your total unique interactions.
 #'
 #' @param n_boot
 #'  Number of desired bootstraps (50 or 100 can be enough).
@@ -247,6 +247,7 @@ boot_specieslevel_n <- function(data,
                                 n_boot,
                                 n_cpu,
                                 ...){
+  test_data(data, col_lower, col_higher)
   cls_data <- class(data)
   if (! "data.table" %in% class(data)) data.table::setDT(data)
 
