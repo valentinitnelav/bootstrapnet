@@ -78,10 +78,13 @@ ggsave(filename = "man/cache/README-example-nestedness-1.png",
 
 ![](man/cache/README-example-nestedness-1.png)
 
-`spl_size` represents the number of interactions sampled (without replacement) from each network/web (here, s1 and s2). The first sample was set to `start = 20` interactions. At each step of 10 sampled interactions (`step = 10`), a metric is computed (here nestedness). The last computed index value (right most tip of a bootstrap mean line) corresponds to the index value of the entire network. 
+`spl_size` represents the number of interactions sampled (without replacement) from each network/web (here, s1 and s2). The first sample is set to `start = 20` interactions. These 20 interactions form a small web for which a nestedness value is computed. Then we add 10 more randomly sampled interactions (`step = 10`) that where not sampled yet. The new network has now 30 interactions and a new nestedness is computed for `spl_size = 30`, and so on until all interactions were sampled (that is, the entire web).
 
-These operations are repeated `n_boot = 100` times in parallel on `n_cpu = 3` CPUs. Each thinner line represents one of the 100 iterations. Having 100 nestedness values at each `spl_size`, then we can compute an average and the 95% quantile-based confidence intervals (CI) around it. Therefore, we get the mean thicker line and its 95% CI dashed lines. Is normal to see wider 95% CIs at smaller `spl_size` since there is high variation in the networks constructed from the few sampled interactions. The CIs have to converge at the final index value, which is the index of the entire network (see values below).
-The same resampling procedure is applied for species level indices.
+So, after the first `start = 20` sample, at each step of 10 sampled interactions (`step = 10`), a metric is computed (here nestedness). The last computed index value (right most tip of a bootstrap mean line) corresponds to the index value of the entire network (because at this point, as mentioned above, the entire network was sampled). 
+
+These operations are repeated `n_boot = 100` times in parallel on `n_cpu = 3` CPUs for each web (s1 & s2). For each web, each thinner line represents one of the 100 iterations. Having 100 nestedness values at each `spl_size`, then we can compute an average and the 95% quantile-based confidence intervals (CI) around it. Therefore, we get the mean thicker line and its 95% CI dashed lines. Is normal to see wider 95% CIs at smaller `spl_size` since there is high variation in the networks constructed from the few sampled interactions. At the otehr end, the CIs have to converge at the final index value, which is the index of the entire network (see values below).
+
+The same resampling / bootstrapping procedure is applied for species level indices.
 
 ``` r
 # The last computed index value (right most tip of a bootstrap mean line)
@@ -103,6 +106,6 @@ Such accumulation/rarefaction curves allow comparison of networks/webs with diff
 Here, the web s2, even though has fewer interactions, seems to produce a stable, asymptotic resampled nestedness (blue line) as the one of web s1 (red line). The two networks are not much different in terms of nestedness, since the 95% CI overlap considerably.
 
 
-# Acknowledgments
+## Acknowledgments
 
 Many thanks to [Tiffany Knight](https://www.ufz.de/index.php?en=38645), my beloved professor without whom the development of this package would not have been possible.
