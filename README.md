@@ -77,3 +77,27 @@ ggsave(filename = "man/cache/README-example-nestedness-1.png",
 -->
 
 ![](man/cache/README-example-nestedness-1.png)
+
+`spl_size` represents the number of interactions sampled (without replacement) from each network/web (here, s1 and s2). The first sample was set to `start = 20` interactions. At each step of 10 sampled interactions (`step = 10`), a metric is computed (here nestedness). The last computed index value (right most tip of a bootstrap mean line) corresponds to the index value of the entire network. 
+
+These operations are repeated `n_boot = 100` times in parallel on `n_cpu = 3` CPUs. Each thinner line represents one of the 100 iterations. Having 100 nestedness values at each `spl_size`, then we can compute an average and the 95% quantile-based confidence intervals (CI) around it. Therefore, we get the mean thicker line and its 95% CI dashed lines. Is normal to see wider 95% CIs at smaller `spl_size` since there is high variation in the networks constructed from the few sampled interactions. The CIs have to converge at the final index value, which is the index of the entire network (see values below).
+The same resampling procedure is applied for species level indices.
+
+``` r
+# The last computed index value (right most tip of a bootstrap mean line)
+# corresponds to the index value of the entire network:
+
+networklevel(Safariland_1, index = "nestedness", level = "both")
+## nestedness
+##  17.36351
+
+networklevel(Safariland_2, index = "nestedness", level = "both")
+## nestedness
+##  23.23792
+```
+
+#### Discussion
+
+Such accumulation/rarefaction curves allow comparison of networks/webs with different number of interactions. Ideally the indices/metrics will be compared if the curves display a trend of reaching an asymptote. That means that if we keep on investing effort to sample interactions (observe plant-pollinator in the field) we will not gain much further information, so network comparison is already possible.
+
+Here, the web s2, even though has fewer interactions, seems to produce a stable, asymptotic resampled nestedness (blue line) as the one of web s1 (red line). The two networks are not much different in terms of nestedness, since the 95% CI overlap considerably.
