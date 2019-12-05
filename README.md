@@ -90,11 +90,11 @@ The same resampling / bootstrapping procedure is applied for species level indic
 # The last computed index value (right most tip of a bootstrap mean line)
 # corresponds to the index value of the entire network:
 
-networklevel(Safariland_1, index = "nestedness", level = "both")
+networklevel(Safariland_1, index = "nestedness")
 ## nestedness
 ##  17.36351
 
-networklevel(Safariland_2, index = "nestedness", level = "both")
+networklevel(Safariland_2, index = "nestedness")
 ## nestedness
 ##  23.23792
 ```
