@@ -101,3 +101,8 @@ networklevel(Safariland_2, index = "nestedness", level = "both")
 Such accumulation/rarefaction curves allow comparison of networks/webs with different number of interactions. Ideally the indices/metrics will be compared if the curves display a trend of reaching an asymptote. That means that if we keep on investing effort to sample interactions (observe plant-pollinator in the field) we will not gain much further information, so network comparison is already possible.
 
 Here, the web s2, even though has fewer interactions, seems to produce a stable, asymptotic resampled nestedness (blue line) as the one of web s1 (red line). The two networks are not much different in terms of nestedness, since the 95% CI overlap considerably.
+
+
+# Acknowledgments
+
+Many thanks to [Tiffany Knight](https://www.ufz.de/index.php?en=38645), my beloved professor without whom the development of this package would not have been possible.
