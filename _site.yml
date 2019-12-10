@@ -9,6 +9,9 @@ navbar:
     - text: "Examples"
       icon: fa-gear
       href: examples.html
+    - text: "The sampling method"
+      icon: fa-gear
+      href: explain-sampling-method.html
 output:
   html_document:
     theme: cosmo

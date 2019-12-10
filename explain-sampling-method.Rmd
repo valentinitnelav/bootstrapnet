@@ -1,0 +1,145 @@
+---
+title: "Explain me the sampling method"
+author: "by [Valentin Stefan](https://github.com/valentinitnelav) - last update `r format(Sys.time(), '%d %B %Y')`"
+---
+
+```{r global-options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r load-packages}
+# Install bootstrapnet if not already done:
+# install.packages("devtools")
+# devtools::install_github("valentinitnelav/bootstrapnet")
+library(bootstrapnet)
+library(bipartite)
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(knitr)
+
+data(Safariland)
+```
+
+```{r global-functions, include=FALSE}
+matrix_plot <- function(data){
+  ggplot(data = data,
+         aes(x = Insects,
+             y = Plants)) + 
+    geom_raster(aes(fill = counts_fct)) +
+    scale_fill_manual(values = "gray", na.value = "transparent") +
+    geom_text(aes(label = counts),
+              size = 3) +
+    coord_fixed() +
+    theme_bw() +
+    theme(axis.text.x = element_text(size = 9, angle = 90, hjust = 1, vjust = 0.3),
+          axis.text.y = element_text(size = 9),
+          legend.position = "none")
+}
+```
+
+Consider the `Safariland` web from the `bipartite` package, which looks like this: 
+```{r about-Safariland, fig.cap = 'Fig. 1 - Safariland web from which we will sample without replacement', fig.align="center"}
+saf_long <- reshape2::melt(Safariland) %>%
+  rename(Plants = Var1,
+         Insects = Var2,
+         counts = value) %>% 
+  filter(counts != 0) %>% 
+  mutate(counts_fct = "gray",
+         Plants = reorder(Plants, desc(Plants)))
+
+matrix_plot(saf_long)
+# visweb(Safariland, labsize = 4, text = "interaction", textsize = 2)
+# kable(Safariland)
+```
+
+
+There are `r sum(Safariland)` total interactions in the web. We can draw the first `start` sample of, say, 100 random interactions without replacement.
+
+```{r get-split-indices}
+dt <- Safariland %>% web_matrix_to_df() %>% setDT()
+ids_lst <- bootstrapnet:::sample_indices(data = dt, start = 100, step = 50, seed = 666)
+```
+
+Side note: for a start value of 100 interactions and a step of 50, the sampling procedure splits the `r sum(Safariland)` interactions into `r length(ids_lst)` sub-webs (first one contains 100 interactions, then each subsequent one contains approximatively 50 more sampled interactions on top of the previous one).
+
+So, with the start sample of 100 interactions we can form this web below (Fig 2). All names of plants and insects are kept for easy visual comparison with the entire web from above (Fig 1).
+```{r start-sample, fig.cap = 'Fig. 2 - The web formed with the first sample of interactions from Safariland', fig.align="center"}
+# dt[ids_lst[[1]], table(lower, higher)] %>%
+#   visweb(labsize = 1, text = "interaction", textsize = 2)
+dt[ids_lst[[1]]] %>% 
+  count(lower, higher) %>% 
+  rename(Plants = lower,
+         Insects = higher) %>% 
+  full_join(x = saf_long, y = ., by = c("Plants", "Insects")) %>% 
+  mutate(counts = n,
+         counts_fct = ifelse(is.na(n), yes = NA, no = "red"),
+         Plants = factor(Plants, levels = levels(saf_long$Plants)),
+         Insects = factor(Insects, levels = levels(saf_long$Insects))) %>% 
+  matrix_plot()
+```
+
+Adding about 50 more sampled interactions to the previous one, we get the second sub-web, which looks like this (Fig. 3):
+```{r second-sample, fig.cap = 'Fig. 3 - The web formed with adding the second sample of interactions from Safariland', fig.align="center"}
+# dt[ids_lst[[2]], table(lower, higher)] %>% 
+#   visweb(labsize = 1, text = "interaction", textsize = 2)
+dt[ids_lst[[2]]] %>% 
+  count(lower, higher) %>% 
+  rename(Plants = lower,
+         Insects = higher) %>% 
+  full_join(x = saf_long, y = ., by = c("Plants", "Insects")) %>% 
+  mutate(counts = n,
+         counts_fct = ifelse(is.na(n), yes = NA, no = "red"),
+         Plants = factor(Plants, levels = levels(saf_long$Plants)),
+         Insects = factor(Insects, levels = levels(saf_long$Insects))) %>% 
+  matrix_plot()
+```
+
+Note that, in the second sub-web we managed to sample new species by sampling 50 more interactions:
+
+- higher level species (OX axis): `r setdiff(dt[ids_lst[[2]],higher], dt[ids_lst[[1]],higher])`
+- lower level species (OY axis): `r setdiff(dt[ids_lst[[2]],lower], dt[ids_lst[[1]],lower])`
+
+And we keep on sampling without replacement until we sample the entire Safariland. For each sub-web we can compute a network index, say 'nestedness'. So, we get a vector of `r length(ids_lst)` values, the last one corresponding to the entire network.
+```{r nestedness-1-boot, fig.cap = 'Fig. 4 - Nestedness values for each sampled web. The last value corresponds to the entire Safariland web', fig.align="center"}
+metric_lst <- vector(mode = "list", length = length(ids_lst))
+for (i in 1:length(ids_lst)){
+  metric_lst[[i]] <- try({
+    web <- dt[ids_lst[[i]], table(lower, higher)]
+    set.seed(42)
+    bipartite::networklevel(web = web, index = "nestedness", level = "both")
+  })
+}
+# Prepare results
+df_nest <- metric_lst %>%
+  lapply(rbind) %>%
+  lapply(as.data.frame) %>%
+  data.table::rbindlist()
+df_nest$n_interctions <- ids_lst %>% sapply(length)
+
+ggplot(data = df_nest,
+       aes(x = n_interctions,
+           y = nestedness)) +
+  geom_point() +
+  geom_line()
+```
+
+If we repeat this sampling procedure n times, then we get n lines. We can then compute an average line with 95% quantile based confidence intervals as in Fig. 5 below.
+```{r nestedness-n-boots, fig.cap = 'Fig. 5 - Sampled nestedness values, 10 interations. The thick continuous line represents the average line and the dashed lines depict the 95% quantile based confidence intervals around the mean line.', fig.align="center"}
+nest <- list(web = Safariland) %>% 
+  lapply(web_matrix_to_df) %>%
+  boot_networklevel(col_lower = "lower", # column name for plants
+                    col_higher = "higher", # column name for insects
+                    index = "nestedness",
+                    level = "both", # here, nestedness is not affected by level
+                    start = 100,
+                    step = 50,
+                    n_boot = 10,
+                    n_cpu = 2)
+
+gg_networklevel(nest)$nestedness +
+  labs(x = "n_interctions") +
+  theme(legend.position = "none")
+```
+
+Such accumulation/rarefaction curves allow comparison of networks/webs with different number of interactions. Ideally the indices/metrics will be compared if the curves display a trend of reaching an asymptote. That means that if we keep on investing effort to sample interactions (observe plant-pollinator in the field) we will not gain much further information, so network comparison is already possible.
