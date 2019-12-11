@@ -10,7 +10,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="by Valentin Stefan - last update 10 December 2019" />
+<meta name="author" content="by Valentin Stefan - last update 11 December 2019" />
 
 
 <title>Explain me the sampling method</title>
@@ -390,11 +390,15 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Explain me the sampling method</h1>
-<h4 class="author">by <a href="https://github.com/valentinitnelav">Valentin Stefan</a> - last update 10 December 2019</h4>
+<h4 class="author">by <a href="https://github.com/valentinitnelav">Valentin Stefan</a> - last update 11 December 2019</h4>
 
 </div>
 
 
+<div id="one-iteration" class="section level1">
+<h1>One iteration</h1>
+<div id="explain" class="section level2">
+<h2>Explain</h2>
 Consider the <code>Safariland</code> web from the <code>bipartite</code> package, which looks like this:
 <div class="figure" style="text-align: center">
 <img src="explain-sampling-method_files/figure-html/about-Safariland-1.png" alt="Fig. 1 - Safariland web from which we will sample without replacement" width="672" />
@@ -430,7 +434,16 @@ And we keep on sampling without replacement until we sample the entire Safarilan
 Fig. 4 - Nestedness values for each sampled web. The last value corresponds to the entire Safariland web
 </p>
 </div>
-If we repeat this sampling procedure n times, then we get n lines. We can then compute an average line with 95% quantile based confidence intervals as in Fig. 5 below.
+</div>
+<div id="animation" class="section level2">
+<h2>Animation</h2>
+<p>Below is an animation of the sampling method (one iteration):</p>
+<p><img src="man/cache/sample-nestedness-1-boot.gif" /></p>
+</div>
+</div>
+<div id="multiple-iterations" class="section level1">
+<h1>Multiple iterations</h1>
+<p>If we repeat this sampling procedure n times, then we get n lines. We can then compute an average line with 95% quantile based confidence intervals as in Fig. 5 below.</p>
 <div class="figure" style="text-align: center">
 <img src="explain-sampling-method_files/figure-html/nestedness-n-boots-1.png" alt="Fig. 5 - Sampled nestedness values, 10 interations. The thick continuous line represents the average line and the dashed lines depict the 95% quantile based confidence intervals around the mean line." width="672" />
 <p class="caption">
@@ -438,6 +451,7 @@ Fig. 5 - Sampled nestedness values, 10 interations. The thick continuous line re
 </p>
 </div>
 <p>Such accumulation/rarefaction curves allow comparison of networks/webs with different number of interactions. Ideally the indices/metrics will be compared if the curves display a trend of reaching an asymptote. That means that if we keep on investing effort to sample interactions (observe plant-pollinator in the field) we will not gain much further information, so network comparison is already possible.</p>
+</div>
 
 
 

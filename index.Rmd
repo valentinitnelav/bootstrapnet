@@ -19,6 +19,9 @@ One can sample interactions without replacement from the network until all inter
 
 [bip]: https://cran.r-project.org/web/packages/bipartite/index.html
 
+Below is an animation of the sampling method (one iteration). A detailed explanation of the method can be found [here](https://valentinitnelav.github.io/bootstrapnet/explain-sampling-method.html).
+
+![](man/cache/sample-nestedness-1-boot.gif)
 
 # Installation
 

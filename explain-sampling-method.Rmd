@@ -7,6 +7,11 @@ author: "by [Valentin Stefan](https://github.com/valentinitnelav) - last update 
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 ```
 
+```{r setup, include=FALSE}
+# For avoiding long waiting time, read already saved/cached objects
+nest <- readRDS(file = "./man/cache/explain-sampling-method-nest-1.rds")
+```
+
 ```{r load-packages}
 # Install bootstrapnet if not already done:
 # install.packages("devtools")
@@ -16,7 +21,10 @@ library(bipartite)
 library(dplyr)
 library(data.table)
 library(ggplot2)
-library(knitr)
+library(animation)
+library(patchwork)
+
+library(filesstrings)
 
 data(Safariland)
 ```
@@ -36,7 +44,40 @@ matrix_plot <- function(data){
           axis.text.y = element_text(size = 9),
           legend.position = "none")
 }
+
+matrix_plot_sampled <- function(data){
+  data %>% 
+    count(lower, higher) %>% 
+    rename(Plants = lower,
+           Insects = higher) %>% 
+    full_join(x = saf_long, y = ., by = c("Plants", "Insects")) %>% 
+    mutate(counts = n,
+           counts_fct = ifelse(is.na(n), yes = NA, no = "red"),
+           Plants = factor(Plants, levels = levels(saf_long$Plants)),
+           Insects = factor(Insects, levels = levels(saf_long$Insects))) %>% 
+    matrix_plot() +
+    theme(axis.title = element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank())
+}
+
+plot_nest <- function(df_nest){
+  ggplot(data = df_nest,
+         aes(x = n_interctions,
+             y = nestedness)) +
+    geom_point() +
+    geom_line() +
+    scale_x_continuous(breaks = seq(from = 100, to = 1200, by = 100),
+                       limits = c(100, 1150)) +
+    scale_y_continuous(breaks = seq(from = 15, to = 35, by = 5),
+                       limits = c(19, 35)) +
+    theme_bw()
+}
 ```
+
+# One iteration
+
+## Explain
 
 Consider the `Safariland` web from the `bipartite` package, which looks like this: 
 ```{r about-Safariland, fig.cap = 'Fig. 1 - Safariland web from which we will sample without replacement', fig.align="center"}
@@ -121,11 +162,49 @@ ggplot(data = df_nest,
        aes(x = n_interctions,
            y = nestedness)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  theme_bw()
 ```
 
+
+## Animation
+
+Below is an animation of the sampling method (one iteration):
+```{r build-gif, eval = FALSE}
+safariland_gg <- matrix_plot(saf_long) +
+  scale_x_discrete(position = "top") +
+  theme(axis.text.x = element_text(size = 9, angle = 90, hjust = 0),
+        axis.title = element_blank())
+
+saveGIF({
+  for (i in 1:length(ids_lst)) {
+    safariland_sample_gg <- dt[ids_lst[[i]]] %>% matrix_plot_sampled()
+    
+    nest_gg <- plot_nest(df_nest[1:i]) +
+      coord_fixed(ratio = 20)
+    
+    wrap_plots(safariland_gg, safariland_sample_gg, nest_gg,
+               ncol = 1) %>% 
+      plot()
+  }
+},
+movie.name = "sample-nestedness-1-boot.gif",
+ani.width = 600, ani.height = 800,
+interval = 0.5)
+
+file.move(files = "./sample-nestedness-1-boot.gif",
+          destinations = "./man/cache",
+          overwrite = TRUE)
+```
+
+![](man/cache/sample-nestedness-1-boot.gif)
+
+
+# Multiple iterations
+
 If we repeat this sampling procedure n times, then we get n lines. We can then compute an average line with 95% quantile based confidence intervals as in Fig. 5 below.
-```{r nestedness-n-boots, fig.cap = 'Fig. 5 - Sampled nestedness values, 10 interations. The thick continuous line represents the average line and the dashed lines depict the 95% quantile based confidence intervals around the mean line.', fig.align="center"}
+
+```{r compute-nestedness-n-boots, eval = FALSE}
 nest <- list(web = Safariland) %>% 
   lapply(web_matrix_to_df) %>%
   boot_networklevel(col_lower = "lower", # column name for plants
@@ -137,8 +216,14 @@ nest <- list(web = Safariland) %>%
                     n_boot = 10,
                     n_cpu = 2)
 
+saveRDS(nest, file = "./man/cache/explain-sampling-method-nest-1.rds")
+```
+
+```{r nestedness-n-boots, fig.cap = 'Fig. 5 - Sampled nestedness values, 10 interations. The thick continuous line represents the average line and the dashed lines depict the 95% quantile based confidence intervals around the mean line.', fig.align="center"}
+
 gg_networklevel(nest)$nestedness +
   labs(x = "n_interctions") +
+  theme_bw() +
   theme(legend.position = "none")
 ```
 
