@@ -197,7 +197,7 @@ file.move(files = "./sample-nestedness-1-boot.gif",
           overwrite = TRUE)
 ```
 
-![](man/cache/sample-nestedness-1-boot.gif)
+![](https://github.com/valentinitnelav/bootstrapnet/raw/master/man/cache/sample-nestedness-1-boot.gif)
 
 
 # Multiple iterations

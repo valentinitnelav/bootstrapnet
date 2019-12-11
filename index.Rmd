@@ -21,7 +21,7 @@ One can sample interactions without replacement from the network until all inter
 
 Below is an animation of the sampling method (one iteration). A detailed explanation of the method can be found [here](https://valentinitnelav.github.io/bootstrapnet/explain-sampling-method.html).
 
-![](man/cache/sample-nestedness-1-boot.gif)
+![](https://github.com/valentinitnelav/bootstrapnet/raw/master/man/cache/sample-nestedness-1-boot.gif)
 
 # Installation
 
