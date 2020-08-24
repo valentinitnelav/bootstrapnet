@@ -29,7 +29,7 @@
 #' GitHub page [here](https://github.com/valentinitnelav/bootstrapnet)
 #'
 #' @author
-#' Valentin Stefan
+#' Valentin Stefan, Tiffany Knight
 #'
 #' @md
 #'

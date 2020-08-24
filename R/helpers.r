@@ -34,7 +34,7 @@
 #'
 #' @md
 web_matrix_to_df <- function(web, seed = 42){
-  if (class(web) != "matrix") stop("`web` must be a matrix, e.g. `bipartite::Safariland`")
+  if (! is.matrix(web)) stop("`web` must be a matrix, e.g. `bipartite::Safariland`")
 
   set.seed(seed)
   web %>%
@@ -108,10 +108,9 @@ web_matrix_to_df <- function(web, seed = 42){
 #'
 #' @md
 get_stats_single <- function(x, probs = c(0.025, 0.975)){
-  cls <- class(x)
-  if (! cls %in% c("matrix", "array")) stop("Expecting a matrix or a 3 dimensions array")
+  if (! is.array(x) ) stop("Expecting a matrix or a 3 dimensions array")
 
-  if (cls == "matrix") {
+  if (is.matrix(x)) {
     stats_df <- data.frame(spl_size = as.integer(rownames(x))) %>%
       dplyr::mutate(mean   = matrixStats::rowMeans2(x, na.rm = TRUE),
                     ci_low = matrixStats::rowQuantiles(x, probs = probs[1], na.rm = TRUE) %>% unname,
@@ -129,7 +128,7 @@ get_stats_single <- function(x, probs = c(0.025, 0.975)){
     return(list(stats_df = stats_df,
                 lines_df = lines_df))
 
-  } else if (cls == "array") {
+  } else if (length(dim(x)) == 3) {
     means <- x %>%
       apply(MARGIN = 1:2, FUN = mean, na.rm = TRUE) %>%
       as.data.frame %>%
@@ -303,9 +302,9 @@ sample_indices <- function(data, start, step, seed){
     error = function(cond){
       message(cond, "\n")
       stop("\nPossibly because your `start` value, ", start,
-              ", is bigger than the number of interactions in data, ",
-              unique(data) %>% dplyr::select(counts) %>% sum(),
-              ".\nIf this is the case, then consider to reduce `start` to maybe 10 % of your interactions.")
+           ", is bigger than the number of interactions in data, ",
+           unique(data) %>% dplyr::select(counts) %>% sum(),
+           ".\nIf this is the case, then consider to reduce `start` to maybe 10 % of your interactions.")
     }
   )
   # Remove the already sampled ids used for the start sample

@@ -30,5 +30,5 @@ GitHub page \href{https://github.com/valentinitnelav/bootstrapnet}{here}
 }
 
 \author{
-Valentin Stefan
+Valentin Stefan, Tiffany Knight
 }
