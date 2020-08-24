@@ -1,5 +1,5 @@
 Package: bootstrapnet
-Version: 0.0.0.9000
+Version: 1.0.0
 Title: Bootstrap Network Metrics
 Description: Bootstraps indices/metrics of ecological networks computed with the `bipartite` R package functions.
 Authors@R: c(
