@@ -88,7 +88,7 @@ ggsave(filename = "man/cache/README-example-nestedness-1.png",
 
 So, after the first `start = 20` sample, at each step of 10 sampled interactions (`step = 10`), a metric is computed (here nestedness). The last computed index value (right most tip of a bootstrap mean line) corresponds to the index value of the entire network (because at this point, as mentioned above, the entire network was sampled). 
 
-These operations are repeated `n_boot = 100` times in parallel on `n_cpu = 3` CPUs for each web (s1 & s2). For each web, each thinner line represents one of the 100 iterations. Having 100 nestedness values at each `spl_size`, then we can compute an average and the 95% quantile-based confidence intervals (CI) around it. Therefore, we get the mean thicker line and its 95% CI dashed lines. Is normal to see wider 95% CIs at smaller `spl_size` since there is high variation in the networks constructed from the few sampled interactions. At the otehr end, the CIs have to converge at the final index value, which is the index of the entire network (see values below).
+These operations are repeated `n_boot = 100` times in parallel on `n_cpu = 3` CPUs for each web (s1 & s2). For each web, each thinner line represents one of the 100 iterations. Having 100 nestedness values at each `spl_size`, then we can compute an average and the 95% quantile-based confidence intervals (CI) around it. Therefore, we get the mean thicker line and its 95% CI dashed lines. Is normal to see wider 95% CIs at smaller `spl_size` since there is high variation in the networks constructed from the few sampled interactions. At the other end, the CIs have to converge at the final index value, which is the index of the entire network (see values below).
 
 The same resampling / bootstrapping procedure is applied for species level indices.
 
@@ -122,4 +122,4 @@ I am open to code improvements for speed, readability, better modularity, practi
 
 Releases of the package are constantly archived on Zenodo at this [link](https://zenodo.org/record/3997559) where you find also their suggestion for citation. Inspired from Zenodo’s suggestion, you could cite as:
 
-> Valentin Ștefan, & Tiffany Knight. (2020). R package for bootstrapping indices of ecological networks. Zenodo. http://doi.org/10.5281/zenodo.3997559
+> Valentin Ștefan, & Tiffany Marie Knight. (2020). R package for bootstrapping indices of ecological networks. Zenodo. http://doi.org/10.5281/zenodo.3997559
