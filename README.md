@@ -1,6 +1,7 @@
 # bootstrapnet
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3997559.svg)](https://doi.org/10.5281/zenodo.3997559)
+[![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://www.r-project.org/Licenses/MIT)
 
 ## Overview
 
@@ -109,3 +110,16 @@ networklevel(Safariland_2, index = "nestedness")
 Such accumulation/rarefaction curves allow comparison of networks/webs with different number of interactions. Ideally the indices/metrics will be compared if the curves display a trend of reaching an asymptote. That means that if we keep on investing effort to sample interactions (observe plant-pollinator in the field) we will not gain much further information, so network comparison is already possible.
 
 Here, the web s2, even though has fewer interactions, seems to produce a stable, asymptotic resampled nestedness (blue line) as the one of web s1 (red line). The two networks are not much different in terms of nestedness, since the 95% CI overlap considerably.
+
+## How to contribute to the package?
+
+You could fork the github repository, apply your changes, test if things work properly and then submit a pull request. 
+Moreover, feel free to check or open issues about code and documentation suggestions, bugs, etc.
+
+I am open to code improvements for speed, readability, better modularity, practical simplifications, etc. Please, always comment as much as possible your code and reasoning. Better comment more than less :)
+
+## How to cite the package?
+
+Releases of the package are constantly archived on Zenodo at this [link](https://zenodo.org/record/3997559) where you find also their suggestion for citation. Inspired from Zenodo’s suggestion, you could cite as:
+
+> Valentin Ștefan, & Tiffany Knight. (2020). R package for bootstrapping indices of ecological networks. Zenodo. http://doi.org/10.5281/zenodo.3997559
