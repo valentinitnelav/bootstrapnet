@@ -32,7 +32,8 @@ Imports:
     parallel (>= 3.5),
     doParallel (>= 1.0.11),
     foreach (>= 1.4.4),
-    iterators (>= 1.0.10)
+    iterators (>= 1.0.10),
+    methods
 Suggests: 
     devtools,
     testthat
