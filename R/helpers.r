@@ -29,12 +29,13 @@
 #' @importFrom tibble rownames_to_column
 #' @importFrom tidyr gather
 #' @importFrom dplyr filter slice n sample_frac
+#' @importFrom methods is
 #'
 #' @export
 #'
 #' @md
 web_matrix_to_df <- function(web, seed = 42){
-  if (! is.matrix(web)) stop("`web` must be a matrix, e.g. `bipartite::Safariland`")
+  if (! is(web, "matrix")) stop("`web` must be a matrix, e.g. `bipartite::Safariland`")
 
   set.seed(seed)
   web %>%
