@@ -22,11 +22,12 @@ get_length_unq <- function(test_matrix) {
 
 index <- "nestedness"
 
-# For full reproducibly is safer to reorder the Safariland matrix
-# alphabetically.
-sf_sort <- Safariland %>%
-  .[, order(colnames(.))] %>%
-  .[order(rownames(.)), ]
+# For full reproducibility we need to reorder the Safariland matrix
+# alphabetically. This is needed because in boot_specieslevel_once() we use the
+# table() function to (re)construct/sample networks and the species names are
+# ordered alphabetically, which is not the case for Safariland default matrix
+# that comes with the bipartite package.
+sf_sort <- Safariland[order(rownames(Safariland)), order(colnames(Safariland))]
 
 set.seed(42)
 test_both <- networklevel(sf_sort, index = index, level = "both")

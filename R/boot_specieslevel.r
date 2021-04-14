@@ -380,7 +380,6 @@ boot_specieslevel_once <- function(data,
                                    step,
                                    seed,
                                    ...){
-  if (! "data.table" %in% class(data)) data.table::setDT(data)
 
   # List of sampled indices as vectors for bootstrapping. Each vector of indices
   # is used to build a web matrix/network from data.

@@ -355,6 +355,12 @@ boot_networklevel_n <- function(data,
 #'  `index='niche overlap'`, it returns a two columns data frame, first column
 #'  ('niche.overlap.HL') corresponding to the higher level (e.g. insects), and
 #'  the second column ('niche.overlap.LL') for the lower level (e.g. plants).
+#'  The number of rows in the returned data frame corresponds to the number of
+#'  splits given by `bootstrapnet:::sample_indices` (is the length/number of
+#'  elements of the list returned by this function). The last value(s) in the
+#'  data frame correspond to the results of
+#'  \code{\link[bipartite]{networklevel}} on the entire network - see in
+#'  examples.
 #'
 #' @references
 #'  This function is a wrapper of \code{\link[bipartite]{networklevel}}.
@@ -363,6 +369,49 @@ boot_networklevel_n <- function(data,
 #'
 #' @importFrom magrittr %>%
 #' @importFrom bipartite networklevel
+#'
+#' @examples
+#'
+#' library(bootstrapnet)
+#' library(bipartite)
+#' library(data.table)
+#'
+#' data(Safariland)
+#'
+#' df <- web_matrix_to_df(Safariland)
+#' setDT(df) # df must be a data.table and not data.frame
+#'
+#' # Example with "nestedness":
+#'
+#' boot_networklevel_once(data = df,
+#'                        col_lower = "lower", # column name for plants
+#'                        col_higher = "higher", # column name for insects
+#'                        index = "nestedness",
+#'                        level = "both",
+#'                        start = 100,
+#'                        step = 100,
+#'                        seed = 2020-11-5)
+#' # Returns a one column data frame. The last value must equal the result of:
+#' set.seed(42) # this is the same seed used in the boot_networklevel_once() function
+#' bipartite::networklevel(table(df$lower, df$higher),
+#'                        index = "nestedness")
+#' # which is also the equivalent of:
+#' Safariland_sorted <- Safariland[order(rownames(Safariland)), order(colnames(Safariland))]
+#' set.seed(42)
+#' bipartite::networklevel(Safariland_sorted, index = "nestedness")
+#'
+#'
+#' # Example with "niche overlap":
+#'
+#' boot_networklevel_once(data = df,
+#'                        col_lower = "lower", # column name for plants
+#'                        col_higher = "higher", # column name for insects
+#'                        index = "niche overlap",
+#'                        level = "both",
+#'                        start = 100,
+#'                        step = 100,
+#'                        seed = 2020-11-5)
+#' # Returns a two column data frame
 #'
 #' @export
 #'
@@ -377,10 +426,9 @@ boot_networklevel_once <- function(data,
                                    seed,
                                    ...){
 
-  if (! "data.table" %in% class(data)) data.table::setDT(data)
-
-  # List of sampled indices as vectors for bootstrapping. Each vector of indices
-  # is used to build a web matrix/network from data.
+  # List of sampled row indices from data to be used for bootstrapping. Each row
+  # represents a plant-pollinator interaction. Each vector of sampled indices is
+  # used to build a web matrix/network from data.
   ids_lst <- sample_indices(data = data, start = start, step = step, seed = seed)
 
   # Allocate memory for the objects that will grow during iterations/bootstrapping.
@@ -389,12 +437,13 @@ boot_networklevel_once <- function(data,
   # Sample interactions with the indices build above and compute the network
   # level metric until all interactions are sampled. In case of errors (most
   # probably related to small sample size of a network at first iterations),
-  # then `try()` returns NaN-s for the metric so it doesn't break the
-  # bootstrapping process.
+  # then `try()` doesn't break the bootstrapping process.
   for (i in 1:length(ids_lst)){
     metric_lst[[i]] <- try({
       # Some metrics, like nestedness have random processes in their
-      # computation, so set seed here also for reproducibility.
+      # computation, so set seed here also for reproducibility. That is, if one
+      # wants to run the same random processes again, should get identical
+      # results.
       web <- data[ids_lst[[i]], table(get(col_lower), get(col_higher))]
       set.seed(42)
       bipartite::networklevel(web = web, index = index, level = level, ...)

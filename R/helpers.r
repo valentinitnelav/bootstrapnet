@@ -269,9 +269,10 @@ split_in_chunks <- function(x, n) {
 #'
 #' @description
 #'  Prepares a list of row indices from `data`. The first vector of indices (the
-#'  first element of the list) has the length given by `start`. This is the
-#'  smallest network of interactions sampled from `data`. Then the next vector
-#'  of indices grows by `step`. The final vector contains all the interactions.
+#'  first element of the list) has the length given by `start`. This stands for
+#'  the smallest network of interactions sampled from `data`. Then the next
+#'  vector of indices grows by `step`. The final vector contains all the
+#'  interactions.
 #'
 #' @param data
 #'  `data.table` of interactions from which to build and sample web matrices.

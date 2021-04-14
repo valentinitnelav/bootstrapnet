@@ -14,14 +14,17 @@ get_length_unq <- function(df) {
     length()
 }
 
-# Generate two fictive networks to compare. For full reproducibly is safer to
-# reorder the Safariland matrices alphabetically.
+# Generate two fictive networks to compare. For full reproducibility we need to
+# reorder the Safariland matrix alphabetically. This is needed because in
+# boot_specieslevel_once() we use the table() function to (re)construct/sample
+# networks and the species names are ordered alphabetically, which is not the
+# case for Safariland default matrix that comes with the bipartite package.
 set.seed(321)
 Safariland_1 <- Safariland[, sort(sample.int(ncol(Safariland), 10))] %>%
-  .[, order(colnames(.))] %>% .[order(rownames(.)), ]
+  .[order(rownames(.)), order(colnames(.))]
 set.seed(123)
 Safariland_2 <- Safariland[, sort(sample.int(ncol(Safariland), 10))] %>%
-  .[, order(colnames(.))] %>% .[order(rownames(.)), ]
+  .[order(rownames(.)), order(colnames(.))]
 
 
 # Test nestedness ---------------------------------------------------------
