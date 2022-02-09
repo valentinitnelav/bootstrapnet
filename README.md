@@ -25,6 +25,10 @@ Below is an animation of the sampling method (one iteration). A detailed explana
 
 ![](man/cache/sample-nestedness-1-boot.gif)
 
+## Scientific papers using bootstrapnet
+
+Motivans Švara, Elena, et al. "Effects of different types of low‐intensity management on plant‐pollinator interactions in Estonian grasslands." Ecology and evolution 11.23 (2021): 16909-16926. [Link to paper here](https://onlinelibrary.wiley.com/doi/pdf/10.1002/ece3.8325)
+
 ## Installation
 
 You can install `bootstrapnet` from GitHub with:
