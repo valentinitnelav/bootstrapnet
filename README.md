@@ -27,7 +27,9 @@ Below is an animation of the sampling method (one iteration). A detailed explana
 
 ## Scientific papers using bootstrapnet
 
-Motivans Švara, Elena, et al. "Effects of different types of low‐intensity management on plant‐pollinator interactions in Estonian grasslands." Ecology and evolution 11.23 (2021): 16909-16926. [Link to paper here](https://onlinelibrary.wiley.com/doi/pdf/10.1002/ece3.8325)
+Motivans Švara, Elena, et al., 2021. Effects of different types of low‐intensity management on plant‐pollinator interactions in Estonian grasslands. Ecology and evolution 11.23: 16909-16926. [Link to paper here](https://onlinelibrary.wiley.com/doi/pdf/10.1002/ece3.8325)
+
+Rakosy, D., et al. 2022. Intensive grazing alters the diversity, composition and structure of plant-pollinator interaction networks in Central European grasslands. PloS one, 17(3), e0263576. [Link to paper here](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0263576)
 
 ## Installation
 
