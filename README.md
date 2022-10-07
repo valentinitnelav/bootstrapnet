@@ -25,12 +25,6 @@ Below is an animation of the sampling method (one iteration). A detailed explana
 
 ![](man/cache/sample-nestedness-1-boot.gif)
 
-## Scientific papers using bootstrapnet
-
-Motivans Švara, Elena, et al., 2021. Effects of different types of low‐intensity management on plant‐pollinator interactions in Estonian grasslands. Ecology and evolution 11.23: 16909-16926. [Link to paper here](https://onlinelibrary.wiley.com/doi/pdf/10.1002/ece3.8325)
-
-Rakosy, D., et al. 2022. Intensive grazing alters the diversity, composition and structure of plant-pollinator interaction networks in Central European grasslands. PloS one, 17(3), e0263576. [Link to paper here](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0263576)
-
 ## Installation
 
 You can install `bootstrapnet` from GitHub with:
@@ -129,3 +123,11 @@ I am open to code improvements for speed, readability, better modularity, practi
 Releases of the package are constantly archived on Zenodo at this [link](https://zenodo.org/record/3997559) where you find also their suggestion for citation. Inspired from Zenodo’s suggestion, you could cite as:
 
 > Valentin Ștefan, & Tiffany Marie Knight. (2020). R package for bootstrapping indices of ecological networks. Zenodo. http://doi.org/10.5281/zenodo.3997559
+
+### Example of scientific papers using bootstrapnet
+
+Motivans Švara, Elena, et al., 2021. Effects of different types of low‐intensity management on plant‐pollinator interactions in Estonian grasslands. Ecology and evolution 11.23: 16909-16926. [Link to paper here](https://onlinelibrary.wiley.com/doi/pdf/10.1002/ece3.8325)
+
+Rakosy, D., et al. 2022. Intensive grazing alters the diversity, composition and structure of plant-pollinator interaction networks in Central European grasslands. PloS one, 17(3), e0263576. [Link to paper here](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0263576)
+
+Kelly, T. and Elle, E., 2020. Effects of community composition on plant–pollinator interaction networks across a spatial gradient of oak-savanna habitats. Oecologia, 193(1), pp.211-223.
