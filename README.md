@@ -126,7 +126,7 @@ Releases of the package are constantly archived on Zenodo at this [link](https:/
 
 ### Example of scientific papers using bootstrapnet
 
-Zoller, L., Bennett, J., & Knight, T. M., 2023. Plant–pollinator network change across a century in the subarctic. Nature Ecology & Evolution, 1-11. [Link to paper here](file:///home/vs66tavy/Downloads/zoller%20et%20al.%202023.pdf)
+Zoller, L., Bennett, J., & Knight, T. M., 2023. Plant–pollinator network change across a century in the subarctic. Nature Ecology & Evolution, 1-11. [Link to paper here](https://www.nature.com/articles/s41559-022-01928-3)
 
 Rakosy, D., et al. 2022. Intensive grazing alters the diversity, composition and structure of plant-pollinator interaction networks in Central European grasslands. PloS one, 17(3), e0263576. [Link to paper here](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0263576)
 
