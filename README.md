@@ -3,6 +3,8 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3997559.svg)](https://doi.org/10.5281/zenodo.3997559)
 [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://www.r-project.org/Licenses/MIT)
 
+I will not have time to maintain this package anymore. If anyone wants to take over, please let me know.
+
 ## Overview
 
 R package for resampling network metrics/indices (bootstrapping without replacement).
