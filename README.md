@@ -31,9 +31,22 @@ Below is an animation of the sampling method (one iteration). A detailed explana
 
 You can install `bootstrapnet` from GitHub with:
 
+- using `devtools` package
 ``` r
-# install.packages("devtools")
+if (!require(devtools)) install.packages("devtools")
 devtools::install_github("valentinitnelav/bootstrapnet")
+```
+
+- using `remotes` package
+``` r
+if (!require(remotes)) install.packages("remotes")
+remotes::install_github("valentinitnelav/bootstrapnet")
+```
+
+If there might be some administrative firewall on your computer and you get some "proxy" error message, then see issue #29 with this possible solution:
+```r
+if (!require(remotes)) install.packages("remotes")
+remotes::install_url("https://github.com/valentinitnelav/bootstrapnet/archive/HEAD.zip")
 ```
 
 ## Examples
