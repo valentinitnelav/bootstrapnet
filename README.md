@@ -43,7 +43,7 @@ if (!require(remotes)) install.packages("remotes")
 remotes::install_github("valentinitnelav/bootstrapnet")
 ```
 
-If there might be some administrative firewall on your computer and you get some "proxy" error message, then see issue #29 with this possible solution:
+If there might be some administrative firewall on your computer and you get some "proxy" error message, then see [issue #29](https://github.com/valentinitnelav/bootstrapnet/issues/29) with this possible solution:
 ```r
 if (!require(remotes)) install.packages("remotes")
 remotes::install_url("https://github.com/valentinitnelav/bootstrapnet/archive/HEAD.zip")
