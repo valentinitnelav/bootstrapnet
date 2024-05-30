@@ -23,11 +23,12 @@ Below is an animation of the sampling method (one iteration). A detailed explana
 
 ![](https://github.com/valentinitnelav/bootstrapnet/raw/master/man/cache/sample-nestedness-1-boot.gif)
 
+See also the [README file][readme] on the GitHub code base.
+
+[readme]: https://github.com/valentinitnelav/bootstrapnet?tab=readme-ov-file#overview
+
 # Installation
 
-You can install `bootstrapnet` from GitHub with:
+See details in the [README file][install] on the GitHub code base.
 
-``` r
-# install.packages("devtools")
-devtools::install_github("valentinitnelav/bootstrapnet")
-```
+[install]: https://github.com/valentinitnelav/bootstrapnet?tab=readme-ov-file#installation
